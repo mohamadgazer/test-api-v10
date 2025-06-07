@@ -25,4 +25,3 @@ Route::apiResource('admins', AdminController::class);
 use App\Http\Controllers\Api\CartItemController;
 Route::apiResource('cart-items', CartItemController::class);
 
-Route
