@@ -14,3 +14,6 @@ Route::apiResource('orders', OrderController::class);
 
 use App\Http\Controllers\Api\OrderItemController;
 Route::apiResource('order-items', OrderItemController::class);
+
+use App\Http\Controllers\Api\UserController;
+Route::apiResource('users', UserController::class);
