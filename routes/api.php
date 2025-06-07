@@ -17,3 +17,7 @@ Route::apiResource('order-items', OrderItemController::class);
 
 use App\Http\Controllers\Api\UserController;
 Route::apiResource('users', UserController::class);
+
+
+use App\Http\Controllers\Api\AdminController;
+Route::apiResource('admins', AdminController::class);
