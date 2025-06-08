@@ -1,55 +1,46 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\Order;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
-class OrderController extends Controller
+class CategoryController extends Controller
 {
     public function index()
     {
-        return Order::with('user')->get(); // لو في علاقة مع user
-    }
-
-    public function show($id)
-    {
-        return Order::with('user')->findOrFail($id);
+        return Category::all();
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'status' => 'required|string',
-            'total_price' => 'required|numeric'
+            'name' => 'required|string',
+            'description' => 'nullable|string',
         ]);
 
-        $order = Order::create($validated);
-        return response()->json($order, 201);
+        return Category::create($validated);
     }
 
-    public function update(Request $request, $id)
+    public function show(Category $category)
     {
-        $order = Order::findOrFail($id);
+        return $category;
+    }
 
+    public function update(Request $request, Category $category)
+    {
         $validated = $request->validate([
-            'status' => 'sometimes|string',
-            'total_price' => 'sometimes|numeric',
-            'user_id' => 'sometimes|exists:users,id'
+            'name' => 'sometimes|string',
+            'description' => 'nullable|string',
         ]);
 
-        $order->update($validated);
-        return $order;
+        $category->update($validated);
+        return $category;
     }
 
-    public function destroy($id)
+    public function destroy(Category $category)
     {
-        $order = Order::findOrFail($id);
-        $order->delete();
-
-        return response()->json(['message' => 'Order deleted successfully']);
+        $category->delete();
+        return response()->json(['message' => 'Category deleted']);
     }
 }
-
