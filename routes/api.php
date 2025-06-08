@@ -29,3 +29,9 @@ Route::apiResource('cart-items', CartItemController::class);
 use App\Http\Controllers\Auth\RegisterController;
 
 Route::post('register', [RegisterController::class, 'register']);
+
+
+// لا تحتاج تعديلات الآن، فقط تأكد إنك لما تبدأ تحمي routes لاحقًا تستخدم:
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
