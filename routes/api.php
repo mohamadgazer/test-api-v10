@@ -25,3 +25,7 @@ Route::apiResource('admins', AdminController::class);
 use App\Http\Controllers\Api\CartItemController;
 Route::apiResource('cart-items', CartItemController::class);
 
+
+use App\Http\Controllers\Auth\RegisterController;
+
+Route::post('register', [RegisterController::class, 'register']);
