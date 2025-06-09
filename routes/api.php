@@ -16,7 +16,7 @@ use App\Http\Controllers\Api\OrderItemController;
 Route::apiResource('order-items', OrderItemController::class);
 
 use App\Http\Controllers\Api\UserController;
-Route::apiResource('users', UserController::class);
+Route::middleware('auth:sanctum')->apiResource('users', UserController::class);
 
 
 use App\Http\Controllers\Api\AdminController;
