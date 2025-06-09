@@ -1,4 +1,6 @@
 <?php
+// app/Http/Controllers/Api/OrderItemController.php
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -18,7 +20,7 @@ class OrderItemController extends Controller
             'order_id' => 'required|exists:orders,id',
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1',
-            'price' => 'required|numeric'
+            'price' => 'required|numeric|min:0',
         ]);
 
         $orderItem = OrderItem::create($validated);
@@ -38,7 +40,7 @@ class OrderItemController extends Controller
             'order_id' => 'sometimes|exists:orders,id',
             'product_id' => 'sometimes|exists:products,id',
             'quantity' => 'sometimes|integer|min:1',
-            'price' => 'sometimes|numeric'
+            'price' => 'sometimes|numeric|min:0',
         ]);
 
         $orderItem->update($validated);
@@ -49,7 +51,6 @@ class OrderItemController extends Controller
     {
         $orderItem = OrderItem::findOrFail($id);
         $orderItem->delete();
-
-        return response()->json(['message' => 'Order item deleted successfully']);
+        return response()->json(['message' => 'Order item deleted']);
     }
 }

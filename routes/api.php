@@ -15,8 +15,15 @@ Route::apiResource('orders', OrderController::class);
 use App\Http\Controllers\Api\OrderItemController;
 Route::apiResource('order-items', OrderItemController::class);
 
+// use App\Http\Controllers\Api\UserController;
+
+// Route::apiResource('users', UserController::class);
+
+
 use App\Http\Controllers\Api\UserController;
-Route::apiResource('users', UserController::class);
+
+Route::middleware('auth:sanctum')->apiResource('users', UserController::class);
+
 
 
 use App\Http\Controllers\Api\AdminController;
@@ -36,10 +43,10 @@ Route::post('register', [RegisterController::class, 'register']);
 //     return $request->user();
 // });
 
-
 use App\Http\Controllers\Api\AuthController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+
+
