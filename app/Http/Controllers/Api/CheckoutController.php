@@ -8,19 +8,18 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class CheckoutController extends Controller
 {
     public function store(Request $request)
     {
         $request->validate([
-            'user_id' => 'required|exists:users,id',
             'address' => 'required|string|max:255',
         ]);
 
-        $userId = $request->user_id;
+        $userId = Auth::id();
 
-        // هات كل المنتجات اللي في السلة
         $cartItems = CartItem::with('product')->where('user_id', $userId)->get();
 
         if ($cartItems->isEmpty()) {
@@ -30,19 +29,16 @@ class CheckoutController extends Controller
         DB::beginTransaction();
 
         try {
-            // حساب إجمالي السعر
             $total = 0;
 
             foreach ($cartItems as $item) {
                 $total += $item->product->price * $item->quantity;
 
-                // تأكد من توفر الكمية
                 if ($item->quantity > $item->product->stock) {
                     throw new \Exception("Product {$item->product->name} does not have enough stock.");
                 }
             }
 
-            // إنشاء Order
             $order = Order::create([
                 'user_id' => $userId,
                 'total' => $total,
@@ -50,7 +46,6 @@ class CheckoutController extends Controller
                 'status' => 'processing',
             ]);
 
-            // إنشاء OrderItems وتحديث المخزون
             foreach ($cartItems as $item) {
                 OrderItem::create([
                     'order_id' => $order->id,
@@ -62,7 +57,6 @@ class CheckoutController extends Controller
                 $item->product->decrement('stock', $item->quantity);
             }
 
-            // مسح السلة
             CartItem::where('user_id', $userId)->delete();
 
             DB::commit();
