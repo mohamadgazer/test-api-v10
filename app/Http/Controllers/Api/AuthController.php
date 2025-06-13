@@ -38,12 +38,11 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
     
-        // 👇 هنا نستخدم explicitly Guard: api
-        if (!Auth::guard('api')->attempt($request->only('email', 'password'))) {
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
+        $user = User::where('email', $request->email)->first();
     
-        $user = Auth::guard('api')->user();
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Invalid credentials'], 401);
+        }
     
         $token = $user->createToken('auth_token')->plainTextToken;
     
