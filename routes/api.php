@@ -17,6 +17,8 @@ use App\Http\Controllers\Auth\RegisterController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('login',    [AuthController::class, 'login']);
+Route::get('/products', [ProductController::class, 'index']);
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout',   [AuthController::class, 'logout']);
@@ -27,7 +29,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('users', UserController::class);
     Route::apiResource('admins', AdminController::class);
     Route::apiResource('cart-items', CartItemController::class);
-    Route::apiResource('products', ProductController::class);
+    // Route::apiResource('products', ProductController::class);
     // ... إضافة أي راوت آخر محمي
 });
 
