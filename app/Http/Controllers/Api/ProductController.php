@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\LaptopDetail;
 
 class ProductController extends Controller
 {
@@ -14,21 +15,16 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        $productModelId = $product->product_model_id;
-
-        $laptopDetails = LaptopDetail::with(['rams', 'storages', 'defaultRam', 'defaultStorage'])
-            ->where('product_model_id', $productModelId)
-            ->first();
-        
-        $product->laptop_details = $laptopDetails;
-        
-        $product->final_price = $laptopDetails?->base_price 
-            + $laptopDetails?->defaultRam?->price 
-            + $laptopDetails?->defaultStorage?->price;
-        
+        $product = Product::with([
+            'category',
+            'brand',
+            'productModel',
+            'images',
+            'laptopDetails.defaultRam',
+            'laptopDetails.defaultStorage'
+        ])->findOrFail($id);
+    
         return response()->json($product);
-        
-        
     }
     
 
@@ -37,7 +33,7 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => 'required|string',
             'description' => 'nullable|string',
-            'price' => 'required|numeric',
+            // 'price' => 'required|numeric',
             'stock' => 'required|integer',
             'image' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
@@ -57,7 +53,7 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => 'sometimes|string',
             'description' => 'nullable|string',
-            'price' => 'sometimes|numeric',
+            // 'price' => 'sometimes|numeric',
             'stock' => 'sometimes|integer',
             'image' => 'nullable|string',
             'category_id' => 'sometimes|exists:categories,id',
