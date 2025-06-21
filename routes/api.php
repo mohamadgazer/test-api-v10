@@ -13,11 +13,39 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CheckoutController; 
 use App\Http\Controllers\Auth\RegisterController;
 
+//labtop details
+use App\Http\Controllers\Api\ProductModelController;
+use App\Http\Controllers\Api\BrandController;
+use App\Http\Controllers\Api\CPUController;
+use App\Http\Controllers\Api\GPUController;
+use App\Http\Controllers\Api\DedicatedGPUController;
+use App\Http\Controllers\Api\RAMController;
+use App\Http\Controllers\Api\RAMTypeController;
+use App\Http\Controllers\Api\StorageController;
+use App\Http\Controllers\Api\ProductImageController;
+use App\Http\Controllers\Api\LaptopDetailController;
 // Public routes
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('login',    [AuthController::class, 'login']);
-Route::get('/products', [ProductController::class, 'index']);
+// Route::get('/products', [ProductController::class, 'index']);
+// Route::apiResource('products', App\Http\Controllers\Api\ProductController::class);
+// Route::apiResource('products', ProductController::class);
+// Route::post('/products', [ProductController::class, 'store']);
+Route::apiResource('products', ProductController::class);
+
+// labtop details
+Route::apiResource('brands', BrandController::class);
+Route::apiResource('cpus', CpuController::class);
+Route::apiResource('gpus', GpuController::class);
+Route::apiResource('dedicated-gpus', DedicatedGpuController::class);
+Route::apiResource('rams', RamController::class);
+Route::apiResource('storages', StorageController::class);
+Route::apiResource('product-models', ProductModelController::class);
+Route::apiResource('ram-types', RamTypeController::class);
+Route::apiResource('product-images', ProductImageController::class);
+Route::apiResource('laptop-details', LaptopDetailController::class);
+
 
 
 Route::middleware('auth:sanctum')->group(function () {

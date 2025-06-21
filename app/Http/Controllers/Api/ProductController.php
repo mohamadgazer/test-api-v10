@@ -9,12 +9,12 @@ class ProductController extends Controller
 {
     public function index()
     {
-        return Product::all();
+        return Product::with(['category', 'brand', 'productModel', 'images', 'laptopDetails'])->get();
     }
 
     public function show($id)
     {
-        return Product::findOrFail($id);
+        return Product::with(['category', 'brand', 'productModel', 'images', 'laptopDetails'])->findOrFail($id);
     }
 
     public function store(Request $request)
@@ -25,10 +25,14 @@ class ProductController extends Controller
             'price' => 'required|numeric',
             'stock' => 'required|integer',
             'image' => 'nullable|string',
-            'category_id' => 'required|exists:categories,id'
+            'category_id' => 'required|exists:categories,id',
+            'brand_id' => 'required|exists:brands,id',
+            'product_model_id' => 'required|exists:product_models,id',
         ]);
 
-        return Product::create($validated);
+        $product = Product::create($validated);
+
+        return response()->json($product->load(['category', 'brand', 'productModel', 'images', 'laptopDetails']), 201);
     }
 
     public function update(Request $request, $id)
@@ -41,11 +45,14 @@ class ProductController extends Controller
             'price' => 'sometimes|numeric',
             'stock' => 'sometimes|integer',
             'image' => 'nullable|string',
-            'category_id' => 'sometimes|exists:categories,id'
+            'category_id' => 'sometimes|exists:categories,id',
+            'brand_id' => 'sometimes|exists:brands,id',
+            'product_model_id' => 'sometimes|exists:product_models,id',
         ]);
 
         $product->update($validated);
-        return $product;
+
+        return response()->json($product->load(['category', 'brand', 'productModel', 'images', 'laptopDetails']));
     }
 
     public function destroy($id)
