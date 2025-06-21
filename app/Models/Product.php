@@ -35,4 +35,15 @@ class Product extends Model
     {
         return $this->hasOne(LaptopDetail::class);
     }
+    public function rams()
+{
+    return $this->belongsToMany(Ram::class, 'laptop_rams');
+}
+
+public function storages()
+{
+    return $this->belongsToMany(Storage::class, 'laptop_storages');
+}
+
+
 }

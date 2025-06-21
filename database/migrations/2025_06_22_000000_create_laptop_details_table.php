@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('laptop_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            // $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            $table->foreignId('product_model_id')->constrained()->onDelete('cascade');
             $table->foreignId('brand_id')->constrained();
             $table->foreignId('cpu_id')->constrained();
             $table->foreignId('gpu_id')->nullable()->constrained();

@@ -14,8 +14,23 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        return Product::with(['category', 'brand', 'productModel', 'images', 'laptopDetails'])->findOrFail($id);
+        $productModelId = $product->product_model_id;
+
+        $laptopDetails = LaptopDetail::with(['rams', 'storages', 'defaultRam', 'defaultStorage'])
+            ->where('product_model_id', $productModelId)
+            ->first();
+        
+        $product->laptop_details = $laptopDetails;
+        
+        $product->final_price = $laptopDetails?->base_price 
+            + $laptopDetails?->defaultRam?->price 
+            + $laptopDetails?->defaultStorage?->price;
+        
+        return response()->json($product);
+        
+        
     }
+    
 
     public function store(Request $request)
     {
