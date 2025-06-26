@@ -8,7 +8,7 @@ class Product extends Model
 {
     protected $fillable = [
         'name', 'description', 
-        // 'price', 
+        'price', 
         'stock', 'image',
         'category_id', 'brand_id', 'product_model_id'
     ];
@@ -17,16 +17,16 @@ class Product extends Model
  
     public function getFinalPriceAttribute()
     {
-        $laptopDetails = $this->laptopDetails;
-
-        if (!$laptopDetails) {
-            return null;
+        if ($this->laptopDetails) {
+            return
+                ($this->laptopDetails->base_price ?? 0) +
+                ($this->laptopDetails->defaultRam->price ?? 0) +
+                ($this->laptopDetails->defaultStorage->price ?? 0);
         }
-
-        return optional($laptopDetails)->base_price
-            + optional($laptopDetails->defaultRam)->price
-            + optional($laptopDetails->defaultStorage)->price;
+    
+        return (float) ($this->price ?? 0);
     }
+    
     public function brand()
     {
         return $this->belongsTo(Brand::class);

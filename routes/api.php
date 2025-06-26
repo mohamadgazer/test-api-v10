@@ -21,9 +21,11 @@ use App\Http\Controllers\Api\GPUController;
 use App\Http\Controllers\Api\DedicatedGPUController;
 use App\Http\Controllers\Api\RAMController;
 use App\Http\Controllers\Api\RAMTypeController;
+use App\Http\Controllers\Api\StorageTypeController;
 use App\Http\Controllers\Api\StorageController;
 use App\Http\Controllers\Api\ProductImageController;
 use App\Http\Controllers\Api\LaptopDetailController;
+
 // Public routes
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -43,6 +45,7 @@ Route::apiResource('rams', RamController::class);
 Route::apiResource('storages', StorageController::class);
 Route::apiResource('product-models', ProductModelController::class);
 Route::apiResource('ram-types', RamTypeController::class);
+Route::apiResource('storage-types', StorageTypeController::class);
 Route::apiResource('product-images', ProductImageController::class);
 Route::apiResource('laptop-details', LaptopDetailController::class);
 

@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             CpuSeeder::class,
             GpuSeeder::class,
             DedicatedGpuSeeder::class,
+            StorageTypeSeeder::class,
             StorageSeeder::class,
             ProductModelSeeder::class,
             ProductImageSeeder::class,

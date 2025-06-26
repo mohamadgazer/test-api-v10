@@ -12,13 +12,13 @@ return new class extends Migration
     public function up(): void
     {
 
-        Schema::create('storages', function (Blueprint $table) {
+        Schema::create('laptop_detail_storage_type', function (Blueprint $table) {
             $table->id();
-            $table->integer('size'); // e.g. 256 GB
-            $table->foreignId('storage_type_id')->constrained('storage_types')->onDelete('restrict');
-            $table->decimal('price', 10, 2);
+            $table->foreignId('laptop_detail_id')->constrained('laptop_details')->onDelete('cascade');
+            $table->foreignId('storage_type_id')->constrained('storage_types')->onDelete('cascade');
             $table->timestamps();
         });
+        
     }
 
     /**
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('storages');
+        Schema::dropIfExists('laptop_detail_storage_type');
     }
 };

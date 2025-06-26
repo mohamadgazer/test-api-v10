@@ -12,13 +12,12 @@ return new class extends Migration
     public function up(): void
     {
 
-        Schema::create('storages', function (Blueprint $table) {
+        Schema::create('storage_types', function (Blueprint $table) {
             $table->id();
-            $table->integer('size'); // e.g. 256 GB
-            $table->foreignId('storage_type_id')->constrained('storage_types')->onDelete('restrict');
-            $table->decimal('price', 10, 2);
+            $table->string('name'); 
             $table->timestamps();
         });
+        
     }
 
     /**
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('storages');
+        Schema::dropIfExists('storage_types');
     }
 };

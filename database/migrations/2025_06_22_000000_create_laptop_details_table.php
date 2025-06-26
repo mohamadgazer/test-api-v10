@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             // $table->foreignId('product_id')->constrained()->onDelete('cascade');
             $table->foreignId('product_model_id')->constrained()->onDelete('cascade');
+            
             $table->foreignId('brand_id')->constrained();
             $table->foreignId('cpu_id')->constrained();
             $table->foreignId('gpu_id')->nullable()->constrained();
@@ -22,6 +23,10 @@ return new class extends Migration
             $table->decimal('base_price', 10, 2);
             $table->foreignId('default_ram_id')->nullable()->constrained('rams');
             $table->foreignId('default_storage_id')->nullable()->constrained('storages');
+            $table->foreignId('ram_type_id')->constrained('ram_types')->onDelete('restrict');
+            // $table->foreignId('storage_type_id')->constrained('storage_types')->onDelete('restrict');
+
+
             $table->timestamps();
         });
 

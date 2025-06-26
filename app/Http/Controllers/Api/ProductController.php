@@ -33,12 +33,12 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => 'required|string',
             'description' => 'nullable|string',
-            // 'price' => 'required|numeric',
-            'stock' => 'required|integer',
+            'price' => 'nullable|numeric|min:0',
+            'stock' => 'required|integer|min:0',
             'image' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
             'brand_id' => 'required|exists:brands,id',
-            'product_model_id' => 'required|exists:product_models,id',
+            'product_model_id' => 'nullable|exists:product_models,id', 
         ]);
 
         $product = Product::create($validated);
@@ -51,16 +51,15 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
 
         $validated = $request->validate([
-            'name' => 'sometimes|string',
+            'name' => 'required|string',
             'description' => 'nullable|string',
-            // 'price' => 'sometimes|numeric',
-            'stock' => 'sometimes|integer',
+            'price' => 'nullable|numeric|min:0',
+            'stock' => 'required|integer|min:0',
             'image' => 'nullable|string',
-            'category_id' => 'sometimes|exists:categories,id',
-            'brand_id' => 'sometimes|exists:brands,id',
-            'product_model_id' => 'sometimes|exists:product_models,id',
+            'category_id' => 'required|exists:categories,id',
+            'brand_id' => 'required|exists:brands,id',
+            'product_model_id' => 'nullable|exists:product_models,id', 
         ]);
-
         $product->update($validated);
 
         return response()->json($product->load(['category', 'brand', 'productModel', 'images', 'laptopDetails']));

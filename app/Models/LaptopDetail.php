@@ -14,7 +14,11 @@ class LaptopDetail extends Model
         'dedicated_gpu_id',
         'base_price',
         'default_ram_id',
-        'default_storage_id'
+        'default_storage_id',
+        'ram_type_id',
+        
+        
+
     ];
 
 
@@ -48,6 +52,17 @@ class LaptopDetail extends Model
     return $this->belongsTo(CPU::class);
 }
 
+public function storageType()
+{
+    return $this->belongsTo(StorageType::class);
+}
+
+public function ramType()
+{
+    return $this->belongsTo(RamType::class);
+}
+
+
 public function gpu()
 {
     return $this->belongsTo(GPU::class);
@@ -63,5 +78,13 @@ public function brand()
     return $this->belongsTo(Brand::class);
 }
 
+public function storageTypes()
+{
     
+    return $this->belongsToMany(StorageType::class)->withTimestamps();
+}
+
+
+
+
 }
