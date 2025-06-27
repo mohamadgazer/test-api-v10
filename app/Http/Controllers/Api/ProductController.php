@@ -28,15 +28,21 @@ class ProductController extends Controller
             'brand',
             'images',
             'composite',
-            'composite.defaultRam',
-            'composite.defaultStorage',
-            'composite.rams',
-            'composite.storages',
         ])->findOrFail($id);
-
+    
+        // لو المنتج مركب من LaptopDetail، نحمل العلاقات الإضافية
+        if ($product->is_composite && $product->composite_type === \App\Models\LaptopDetail::class) {
+            $product->composite->load([
+                'rams',
+                'storages',
+                'defaultRam',
+                'defaultStorage',
+            ]);
+        }
+    
         return response()->json($product);
     }
-
+    
     public function store(Request $request)
     {
         $validated = $request->validate([
