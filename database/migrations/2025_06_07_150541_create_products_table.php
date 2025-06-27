@@ -14,17 +14,21 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->text('description');
-            // $table->decimal('price', 10, 2);
-            $table->integer('stock')->default(0);
+            $table->text('description')->nullable();
+            $table->decimal('price', 10, 2)->nullable();
+            $table->unsignedInteger('stock')->default(0);
             $table->string('image')->nullable();
-             $table->foreignId('product_model_id')->constrained()->onDelete('cascade');
-             $table->foreignId('brand_id')->nullable()->constrained()->onDelete('set null');
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->foreignId('brand_id')->constrained()->onDelete('cascade');
+            
+            // composite product handling
+            $table->boolean('is_composite')->default(false);
+            $table->nullableMorphs('composite'); // composite_type, composite_id
+
             $table->timestamps();
         });
     }
-    
+
     /**
      * Reverse the migrations.
      */

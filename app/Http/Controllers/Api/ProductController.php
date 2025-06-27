@@ -1,16 +1,24 @@
 <?php
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
-use App\Models\LaptopDetail;
 
 class ProductController extends Controller
 {
     public function index()
     {
-        return Product::with(['category', 'brand', 'productModel', 'images', 'laptopDetails'])->get();
+        return Product::with([ 
+             'category',
+        'brand',
+        'images',
+        'composite',
+        'composite.defaultRam',
+        'composite.defaultStorage',
+        'composite.rams',
+        'composite.storages',])->get();
     }
 
     public function show($id)
@@ -18,15 +26,16 @@ class ProductController extends Controller
         $product = Product::with([
             'category',
             'brand',
-            'productModel',
             'images',
-            'laptopDetails.defaultRam',
-            'laptopDetails.defaultStorage'
+            'composite',
+            'composite.defaultRam',
+            'composite.defaultStorage',
+            'composite.rams',
+            'composite.storages',
         ])->findOrFail($id);
-    
+
         return response()->json($product);
     }
-    
 
     public function store(Request $request)
     {
@@ -38,12 +47,18 @@ class ProductController extends Controller
             'image' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
             'brand_id' => 'required|exists:brands,id',
-            'product_model_id' => 'nullable|exists:product_models,id', 
+
+            'is_composite'   => 'boolean',
+            'composite_type' => 'nullable|string',
+            'composite_id'   => 'nullable|integer',
         ]);
 
         $product = Product::create($validated);
 
-        return response()->json($product->load(['category', 'brand', 'productModel', 'images', 'laptopDetails']), 201);
+        return response()->json(
+            $product->load(['category', 'brand', 'images', 'composite']),
+            201
+        );
     }
 
     public function update(Request $request, $id)
@@ -58,11 +73,17 @@ class ProductController extends Controller
             'image' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
             'brand_id' => 'required|exists:brands,id',
-            'product_model_id' => 'nullable|exists:product_models,id', 
+
+            'is_composite'   => 'boolean',
+            'composite_type' => 'nullable|string',
+            'composite_id'   => 'nullable|integer',
         ]);
+
         $product->update($validated);
 
-        return response()->json($product->load(['category', 'brand', 'productModel', 'images', 'laptopDetails']));
+        return response()->json(
+            $product->load(['category', 'brand', 'images', 'composite'])
+        );
     }
 
     public function destroy($id)
