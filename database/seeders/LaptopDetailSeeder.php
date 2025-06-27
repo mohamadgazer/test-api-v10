@@ -12,6 +12,6 @@ class LaptopDetailSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        
     }
 }
