@@ -32,11 +32,13 @@ class CheckoutController extends Controller
             $total = 0;
 
             foreach ($cartItems as $item) {
-                $total += $item->product->price * $item->quantity;
+                $finalPrice = $item->final_price;
 
                 if ($item->quantity > $item->product->stock) {
                     throw new \Exception("Product {$item->product->name} does not have enough stock.");
                 }
+
+                $total += $finalPrice * $item->quantity;
             }
 
             $order = Order::create([
@@ -51,7 +53,7 @@ class CheckoutController extends Controller
                     'order_id' => $order->id,
                     'product_id' => $item->product_id,
                     'quantity' => $item->quantity,
-                    'price' => $item->product->price,
+                    'price' => $item->final_price,
                 ]);
 
                 $item->product->decrement('stock', $item->quantity);
@@ -61,7 +63,12 @@ class CheckoutController extends Controller
 
             DB::commit();
 
-            return response()->json(['message' => 'Checkout completed', 'order_id' => $order->id], 201);
+            return response()->json([
+                'message' => 'Checkout completed',
+                'order_id' => $order->id,
+                'total' => $order->total,
+                'items_count' => $cartItems->count(),
+            ], 201);
 
         } catch (\Exception $e) {
             DB::rollBack();
