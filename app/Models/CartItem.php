@@ -27,6 +27,7 @@ class CartItem extends Model
     {
         return $this->hasMany(CartItemConfiguration::class);
     }
+    
 
     public function getFinalPriceAttribute()
     {

@@ -12,4 +12,9 @@ class Storage extends Model
     {
         return $this->hasMany(Product::class);
     }
+
+    public function storageType()
+{
+    return $this->belongsTo(StorageType::class);
+}
 }

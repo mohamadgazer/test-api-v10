@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\CartItem;
-use Illuminate\Http\Request;
 use App\Models\CartItemConfiguration;
+use App\Models\Ram;
+use App\Models\Storage;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CartItemController extends Controller
 {
@@ -13,12 +16,11 @@ class CartItemController extends Controller
     {
         return CartItem::with(['user', 'product', 'configurations'])->get();
     }
-    
+
     public function show($id)
     {
         return CartItem::with(['user', 'product', 'configurations'])->findOrFail($id);
     }
-    
 
     public function store(Request $request)
     {
@@ -28,34 +30,78 @@ class CartItemController extends Controller
             'quantity' => 'required|integer|min:1',
             'configurations' => 'nullable|array',
             'configurations.*.key' => 'required_with:configurations|string',
-            'configurations.*.value' => 'required_with:configurations'
+            'configurations.*.value' => 'required_with:configurations',
         ]);
     
-        // إنشاء عنصر السلة
-        $cartItem = CartItem::create([
-            'user_id' => $validated['user_id'],
-            'product_id' => $validated['product_id'],
-            'quantity' => $validated['quantity']
-        ]);
+        DB::beginTransaction();
     
-        // حفظ التكوينات إن وُجدت
-        if (!empty($validated['configurations'])) {
-            foreach ($validated['configurations'] as $config) {
-                CartItemConfiguration::create([
-                    'cart_item_id' => $cartItem->id,
+        try {
+            $finalPrice = 0;
+            $cartItem = CartItem::create([
+                'user_id' => $validated['user_id'],
+                'product_id' => $validated['product_id'],
+                'quantity' => $validated['quantity'],
+                'final_price' => 0, // مؤقتًا
+            ]);
+    
+            $detailedConfigs = [];
+    
+            foreach ($validated['configurations'] ?? [] as $config) {
+                $displayName = null;
+                $fullData = null;
+    
+                if ($config['key'] === 'ram_id') {
+                    $ram = Ram::with('ramType')->find((int)$config['value']);
+                    if ($ram) {
+                        $displayName = "{$ram->size_gb}GB " . ($ram->ramType->name ?? '');
+                        $finalPrice += (float)$ram->price;
+                        $fullData = $ram->toArray();
+                    }
+                } elseif ($config['key'] === 'storage_id') {
+                    $storage = Storage::with('storageType')->find((int)$config['value']);
+                    if ($storage) {
+                        $displayName = "{$storage->size}GB " . ($storage->storageType->name ?? '');
+                        $finalPrice += (float)$storage->price;
+                        $fullData = $storage->toArray();
+                    }
+                }
+    
+                // سجل التكوين
+                $cartItem->configurations()->create([
                     'key' => $config['key'],
-                    'value' => $config['value']
+                    'value' => $config['value'],
+                    'display_name' => $displayName,
                 ]);
-            }
-        }
     
-        return response()->json($cartItem->load('configurations'), 201);
+                // سجّل نسخة كاملة للإرجاع
+                $detailedConfigs[] = [
+                    'key' => $config['key'],
+                    'value' => $config['value'],
+                    'display_name' => $displayName,
+                    'full_data' => $fullData,
+                ];
+            }
+    
+            $cartItem->update(['final_price' => $finalPrice]);
+    
+            DB::commit();
+    
+            return response()->json([
+                'cart_item' => $cartItem->load('configurations', 'product'),
+                'detailed_configurations' => $detailedConfigs,
+            ], 201);
+    
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
     
+
     public function update(Request $request, $id)
     {
         $cartItem = CartItem::findOrFail($id);
-    
+
         $validated = $request->validate([
             'user_id' => 'sometimes|exists:users,id',
             'product_id' => 'sometimes|exists:products,id',
@@ -64,24 +110,27 @@ class CartItemController extends Controller
             'configurations.*.key' => 'required_with:configurations|string',
             'configurations.*.value' => 'required_with:configurations'
         ]);
-    
+
         $cartItem->update($validated);
-    
-        // تحديث التكوينات (configurations)
+
+        // حذف التكوينات القديمة
+        $cartItem->configurations()->delete();
+
+        // إضافة التكوينات الجديدة
         if ($request->has('configurations')) {
-            // حذف التكوينات القديمة
-            $cartItem->configurations()->delete();
-    
-            // إنشاء التكوينات الجديدة
             foreach ($validated['configurations'] as $config) {
-                CartItemConfiguration::create([
-                    'cart_item_id' => $cartItem->id,
-                    'key' => $config['key'],
-                    'value' => $config['value']
+                $key = $config['key'];
+                $value = $config['value'];
+                $displayName = $this->generateDisplayName($key, $value);
+
+                $cartItem->configurations()->create([
+                    'key' => $key,
+                    'value' => $value,
+                    'display_name' => $displayName
                 ]);
             }
         }
-    
+
         return response()->json($cartItem->load('configurations'));
     }
 
@@ -91,5 +140,23 @@ class CartItemController extends Controller
         $cartItem->delete();
 
         return response()->json(['message' => 'Cart item deleted successfully']);
+    }
+
+    /**
+     * توليد display_name حسب نوع العنصر.
+     */
+    private function generateDisplayName($key, $value)
+    {
+        if ($key === 'ram_id') {
+            $ram = Ram::with('ramType')->find($value);
+            return $ram && $ram->ramType ? "{$ram->size_gb}GB {$ram->ramType->name}" : null;
+        }
+
+        if ($key === 'storage_id') {
+            $storage = Storage::with('storageType')->find($value);
+            return $storage && $storage->storageType ? "{$storage->size}GB {$storage->storageType->name}" : null;
+        }
+
+        return null;
     }
 }
