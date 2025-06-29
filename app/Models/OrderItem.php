@@ -17,4 +17,10 @@ class OrderItem extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    public function configurations()
+{
+    return $this->hasMany(OrderItemConfiguration::class);
+}
+
 }
