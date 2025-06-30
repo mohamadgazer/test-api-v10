@@ -107,6 +107,7 @@ Route::middleware(['auth:sanctum', 'is_admin', 'role:manager'])->group(function 
 });
 
 // 🔵 Viewer and Above (كل الأدمنز)
+
 Route::middleware(['auth:sanctum', 'is_admin'])->group(function () {
     Route::get('products', [ProductController::class, 'index']);
     Route::get('products/{id}', [ProductController::class, 'show']);
