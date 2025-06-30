@@ -5,24 +5,36 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\AdminLog;
 
 class UserController extends Controller
 {
-    public function __construct()
-    {
-        // تأكد من أن المستخدم Admin لكل الدوال
-        $this->middleware('is_admin');
-    }
-
     public function index()
     {
-        return User::all()->makeHidden(['password']);
+        $users = User::all()->makeHidden(['password']);
+
+        AdminLog::create([
+            'admin_id' => auth()->id(),
+            'action' => 'view_users_list',
+            'target_model' => 'User',
+            'data' => null,
+        ]);
+
+        return $users;
     }
 
     public function show($id)
     {
         $user = User::findOrFail($id);
+
+        AdminLog::create([
+            'admin_id' => auth()->id(),
+            'action' => 'view_user',
+            'target_model' => 'User',
+            'target_id' => $user->id,
+            'data' => null,
+        ]);
+
         return $user->makeHidden(['password']);
     }
 
@@ -39,6 +51,14 @@ class UserController extends Controller
 
         $validated['password'] = bcrypt($validated['password']);
         $user = User::create($validated);
+
+        AdminLog::create([
+            'admin_id' => auth()->id(),
+            'action' => 'create_user',
+            'target_model' => 'User',
+            'target_id' => $user->id,
+            'data' => $user->only(['name', 'email', 'phone', 'address', 'is_admin']),
+        ]);
 
         return response()->json($user->makeHidden(['password']), 201);
     }
@@ -61,6 +81,15 @@ class UserController extends Controller
         }
 
         $user->update($validated);
+
+        AdminLog::create([
+            'admin_id' => auth()->id(),
+            'action' => 'update_user',
+            'target_model' => 'User',
+            'target_id' => $user->id,
+            'data' => $validated,
+        ]);
+
         return $user->makeHidden(['password']);
     }
 
@@ -69,6 +98,29 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
 
+        AdminLog::create([
+            'admin_id' => auth()->id(),
+            'action' => 'delete_user',
+            'target_model' => 'User',
+            'target_id' => $id,
+            'data' => null,
+        ]);
+
         return response()->json(['message' => 'User deleted successfully']);
     }
+
+    public function admins()
+{
+    $admins = User::where('is_admin', true)->get()->makeHidden(['password']);
+
+    AdminLog::create([
+        'admin_id' => auth()->id(),
+        'action' => 'view_admins_list',
+        'target_model' => 'User',
+        'data' => null,
+    ]);
+
+    return response()->json($admins);
+}
+
 }

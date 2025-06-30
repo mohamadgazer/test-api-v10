@@ -39,6 +39,14 @@ class ProductController extends Controller
                 'defaultStorage',
             ]);
         }
+        UserLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'view_product',
+            'target_model' => 'Product',
+            'target_id' => $product->id,
+            'data' => [],
+        ]);
+        
     
         return response()->json($product);
     }
