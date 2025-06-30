@@ -64,6 +64,10 @@ Route::middleware(['auth:sanctum', 'is_admin'])->group(function () {
     Route::apiResource('product-models', ProductModelController::class);
     Route::apiResource('product-images', ProductImageController::class);
     Route::apiResource('laptop-details', LaptopDetailController::class);
+
+
+    Route::get('/admins', [UserController::class, 'admins']);
+
 });
 
 // ✅ فحص صلاحية التوكن فقط (اختياري)
