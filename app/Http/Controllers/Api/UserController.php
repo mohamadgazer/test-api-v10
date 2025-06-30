@@ -47,7 +47,9 @@ class UserController extends Controller
             'phone' => 'nullable|string',
             'address' => 'nullable|string',
             'is_admin' => 'boolean',
+            'role' => 'required|string|in:viewer,manager,super_admin',
         ]);
+        
 
         $validated['password'] = bcrypt($validated['password']);
         $user = User::create($validated);
@@ -74,7 +76,9 @@ class UserController extends Controller
             'phone' => 'nullable|string',
             'address' => 'nullable|string',
             'is_admin' => 'boolean',
+            'role' => 'sometimes|string|in:viewer,manager,super_admin',
         ]);
+        
 
         if (isset($validated['password'])) {
             $validated['password'] = bcrypt($validated['password']);

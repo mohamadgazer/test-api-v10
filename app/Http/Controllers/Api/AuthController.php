@@ -31,11 +31,12 @@ class AuthController extends Controller
             'token' => $token
         ], 201);
     }
+    
     public function login(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
-            'password' => 'required'
+            'password' => 'required',
         ]);
     
         $user = User::where('email', $request->email)->first();
@@ -49,9 +50,20 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'Bearer',
-            'user' => $user,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'is_admin' => $user->is_admin,
+                'role' => $user->role, // ✅ أهو ده السطر اللي محتاج تضيفه
+                'phone' => $user->phone,
+                'address' => $user->address,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at,
+            ]
         ]);
     }
+    
     
     public function logout(Request $request)
     {
