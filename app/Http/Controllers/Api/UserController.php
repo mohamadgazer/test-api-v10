@@ -127,4 +127,34 @@ class UserController extends Controller
     return response()->json($admins);
 }
 
+public function updateSelf(Request $request)
+{
+    $user = $request->user();
+
+    $validated = $request->validate([
+        'name' => 'sometimes|string',
+        'email' => 'sometimes|email|unique:users,email,' . $user->id,
+        'password' => 'sometimes|string|min:6',
+        'phone' => 'nullable|string',
+        'address' => 'nullable|string',
+    ]);
+
+    if (isset($validated['password'])) {
+        $validated['password'] = bcrypt($validated['password']);
+    }
+
+    $user->update($validated);
+
+    AdminLog::create([
+        'admin_id' => $user->id,
+        'action' => 'update_self',
+        'target_model' => 'User',
+        'target_id' => $user->id,
+        'data' => $validated,
+    ]);
+
+    return response()->json($user->makeHidden(['password']));
+}
+
+
 }

@@ -113,3 +113,11 @@ Route::middleware(['auth:sanctum', 'is_admin'])->group(function () {
     Route::get('orders', [OrderController::class, 'index']);
     Route::get('users', [UserController::class, 'index']);
 });
+
+
+Route::middleware(['auth:sanctum', 'is_customer'])->group(function () {
+    // routes خاصة بالكاستمر فقط
+});
+
+
+Route::middleware(['auth:sanctum'])->put('/me', [UserController::class, 'updateSelf']);
