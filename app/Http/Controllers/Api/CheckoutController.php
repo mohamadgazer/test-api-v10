@@ -60,6 +60,7 @@ class CheckoutController extends Controller
                         'key' => $config->key,
                         'value' => $config->value,
                         'display_name' => $config->display_name,
+                        'price' => $config->price,
                     ]);
                 }
 

@@ -45,6 +45,8 @@ class Kernel extends HttpKernel
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class, // فقط لو بتستخدم نفس الدومين
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            
+
         ],
     ];
 
@@ -67,5 +69,12 @@ class Kernel extends HttpKernel
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'admin' => \App\Http\Middleware\IsAdmin::class,
+
     ];
+
+    protected $routeMiddleware = [
+        'is_admin' => \App\Http\Middleware\AdminMiddleware::class,
+    ];
+    
 }

@@ -12,6 +12,7 @@ return new class extends Migration {
             $table->string('key');
             $table->string('value');
             $table->string('display_name')->nullable();
+            $table->decimal('price', 10, 2)->nullable(); 
             $table->timestamps();
         });
     }

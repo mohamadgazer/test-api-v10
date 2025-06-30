@@ -5,17 +5,25 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        // تأكد من أن المستخدم Admin لكل الدوال
+        $this->middleware('is_admin');
+    }
+
     public function index()
     {
-        return User::all();
+        return User::all()->makeHidden(['password']);
     }
 
     public function show($id)
     {
-        return User::findOrFail($id);
+        $user = User::findOrFail($id);
+        return $user->makeHidden(['password']);
     }
 
     public function store(Request $request)
@@ -26,11 +34,13 @@ class UserController extends Controller
             'password' => 'required|string|min:6',
             'phone' => 'nullable|string',
             'address' => 'nullable|string',
+            'is_admin' => 'boolean',
         ]);
 
         $validated['password'] = bcrypt($validated['password']);
         $user = User::create($validated);
-        return response()->json($user, 201);
+
+        return response()->json($user->makeHidden(['password']), 201);
     }
 
     public function update(Request $request, $id)
@@ -43,6 +53,7 @@ class UserController extends Controller
             'password' => 'sometimes|string|min:6',
             'phone' => 'nullable|string',
             'address' => 'nullable|string',
+            'is_admin' => 'boolean',
         ]);
 
         if (isset($validated['password'])) {
@@ -50,7 +61,7 @@ class UserController extends Controller
         }
 
         $user->update($validated);
-        return $user;
+        return $user->makeHidden(['password']);
     }
 
     public function destroy($id)

@@ -24,7 +24,8 @@ class DatabaseSeeder extends Seeder
             ProductImageSeeder::class,
             RamTypeSeeder::class,
             RamSeeder::class,
-            LaptopStorageSeeder::class
+            LaptopStorageSeeder::class,
+            AdminUserSeeder::class,
         ]);
     }
     

@@ -25,78 +25,66 @@ class CartItemController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
+            'user_id'    => 'required|exists:users,id',
             'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1',
+            'quantity'   => 'required|integer|min:1',
             'configurations' => 'nullable|array',
             'configurations.*.key' => 'required_with:configurations|string',
             'configurations.*.value' => 'required_with:configurations',
         ]);
-    
+
         DB::beginTransaction();
-    
+
         try {
             $finalPrice = 0;
+
             $cartItem = CartItem::create([
-                'user_id' => $validated['user_id'],
+                'user_id'    => $validated['user_id'],
                 'product_id' => $validated['product_id'],
-                'quantity' => $validated['quantity'],
-                'final_price' => 0, // مؤقتًا
+                'quantity'   => $validated['quantity'],
+                'final_price'=> $finalPrice,
             ]);
-    
-            $detailedConfigs = [];
-    
-            foreach ($validated['configurations'] ?? [] as $config) {
-                $displayName = null;
-                $fullData = null;
-    
-                if ($config['key'] === 'ram_id') {
-                    $ram = Ram::with('ramType')->find((int)$config['value']);
-                    if ($ram) {
-                        $displayName = "{$ram->size_gb}GB " . ($ram->ramType->name ?? '');
-                        $finalPrice += (float)$ram->price;
-                        $fullData = $ram->toArray();
+
+            if (!empty($validated['configurations'])) {
+                foreach ($validated['configurations'] as $config) {
+                    $displayName = null;
+                    $price = null;
+
+                    if ($config['key'] === 'ram_id') {
+                        $ram = Ram::with('ramType')->find((int) $config['value']);
+                        if ($ram) {
+                            $displayName = $ram->size_gb . 'GB ' . optional($ram->ramType)->name;
+                            $price = (float) $ram->price;
+                            $finalPrice += $price;
+                        }
+                    } elseif ($config['key'] === 'storage_id') {
+                        $storage = Storage::with('storageType')->find((int) $config['value']);
+                        if ($storage) {
+                            $displayName = $storage->size . 'GB ' . optional($storage->storageType)->name;
+                            $price = (float) $storage->price;
+                            $finalPrice += $price;
+                        }
                     }
-                } elseif ($config['key'] === 'storage_id') {
-                    $storage = Storage::with('storageType')->find((int)$config['value']);
-                    if ($storage) {
-                        $displayName = "{$storage->size}GB " . ($storage->storageType->name ?? '');
-                        $finalPrice += (float)$storage->price;
-                        $fullData = $storage->toArray();
-                    }
+
+                    $cartItem->configurations()->create([
+                        'key' => $config['key'],
+                        'value' => $config['value'],
+                        'display_name' => $displayName,
+                        'price' => $price,
+                    ]);
                 }
-    
-                // سجل التكوين
-                $cartItem->configurations()->create([
-                    'key' => $config['key'],
-                    'value' => $config['value'],
-                    'display_name' => $displayName,
-                ]);
-    
-                // سجّل نسخة كاملة للإرجاع
-                $detailedConfigs[] = [
-                    'key' => $config['key'],
-                    'value' => $config['value'],
-                    'display_name' => $displayName,
-                    'full_data' => $fullData,
-                ];
+
+                $cartItem->update(['final_price' => $finalPrice]);
             }
-    
-            $cartItem->update(['final_price' => $finalPrice]);
-    
+
             DB::commit();
-    
-            return response()->json([
-                'cart_item' => $cartItem->load('configurations', 'product'),
-                'detailed_configurations' => $detailedConfigs,
-            ], 201);
-    
+
+            return response()->json($cartItem->load('configurations', 'product'), 201);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-    
 
     public function update(Request $request, $id)
     {
@@ -113,20 +101,20 @@ class CartItemController extends Controller
 
         $cartItem->update($validated);
 
-        // حذف التكوينات القديمة
         $cartItem->configurations()->delete();
 
-        // إضافة التكوينات الجديدة
         if ($request->has('configurations')) {
             foreach ($validated['configurations'] as $config) {
                 $key = $config['key'];
                 $value = $config['value'];
                 $displayName = $this->generateDisplayName($key, $value);
+                $price = $this->getConfigurationPrice($key, $value);
 
                 $cartItem->configurations()->create([
                     'key' => $key,
                     'value' => $value,
-                    'display_name' => $displayName
+                    'display_name' => $displayName,
+                    'price' => $price,
                 ]);
             }
         }
@@ -142,9 +130,6 @@ class CartItemController extends Controller
         return response()->json(['message' => 'Cart item deleted successfully']);
     }
 
-    /**
-     * توليد display_name حسب نوع العنصر.
-     */
     private function generateDisplayName($key, $value)
     {
         if ($key === 'ram_id') {
@@ -155,6 +140,21 @@ class CartItemController extends Controller
         if ($key === 'storage_id') {
             $storage = Storage::with('storageType')->find($value);
             return $storage && $storage->storageType ? "{$storage->size}GB {$storage->storageType->name}" : null;
+        }
+
+        return null;
+    }
+
+    private function getConfigurationPrice($key, $value)
+    {
+        if ($key === 'ram_id') {
+            $ram = Ram::find($value);
+            return $ram ? (float) $ram->price : null;
+        }
+
+        if ($key === 'storage_id') {
+            $storage = Storage::find($value);
+            return $storage ? (float) $storage->price : null;
         }
 
         return null;
