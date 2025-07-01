@@ -76,13 +76,24 @@ class UserController extends Controller
             'phone' => 'nullable|string',
             'address' => 'nullable|string',
             'is_admin' => 'boolean',
-            'role' => 'sometimes|string|in:viewer,manager,super_admin',
+            'role' => 'sometimes|string|in:viewer,manager,super_admin,customer',
+
         ]);
         
 
         if (isset($validated['password'])) {
             $validated['password'] = bcrypt($validated['password']);
         }
+        if ($validated['role'] === 'customer') {
+            $validated['is_admin'] = false;
+        } elseif (!isset($validated['is_admin'])) {
+            $validated['is_admin'] = true;
+        }
+        if ($user->role === 'super_admin' && auth()->id() !== $user->id) {
+            return response()->json(['message' => 'You cannot modify another super admin.'], 403);
+        }
+        
+        
 
         $user->update($validated);
 
@@ -146,6 +157,8 @@ public function updateSelf(Request $request)
     $user->update($validated);
 
     AdminLog::create([
+        'data' => $user->only(['name', 'email', 'phone', 'address', 'is_admin', 'role']),
+
         'admin_id' => $user->id,
         'action' => 'update_self',
         'target_model' => 'User',
