@@ -15,7 +15,8 @@ class BrandController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate(['name' => 'required|string']);
+        $request->validate([  'name' => 'required|string',
+    'logo' => 'nullable|url']);
         $brand = Brand::create($request->only('name'));
         return response()->json($brand, 201);
     }
@@ -28,7 +29,8 @@ class BrandController extends Controller
     public function update(Request $request, $id)
     {
         $brand = Brand::findOrFail($id);
-        $request->validate(['name' => 'required|string']);
+        $request->validate([  'name' => 'required|string',
+    'logo' => 'nullable|url']);
         $brand->update($request->only('name'));
         return response()->json($brand);
     }

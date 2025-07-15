@@ -6,18 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    protected $fillable = [
-        'name', 
-        'description', 
-        'price', 
-        'stock', 
-        'image',
-        'category_id', 
-        'brand_id',
-        'is_composite',
-        'composite_type',
-        'composite_id'
-    ];
+protected $fillable = [
+    'name', 
+    'description', 
+    'price', 
+    'stock', 
+    'category_id', 
+    'brand_id',
+    'is_composite',
+    'composite_type',
+    'composite_id'
+];
+
 
     protected $casts = [
         'is_composite' => 'boolean',
@@ -49,6 +49,14 @@ class Product extends Model
     {
         return $this->morphTo();
     }
+
+
+public function mainImage()
+{
+    return $this->hasOne(ProductImage::class)->where('is_main', true);
+}
+
+    
 
     // ========== السعر النهائي ==========
 

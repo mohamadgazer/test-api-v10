@@ -23,6 +23,8 @@ use App\Http\Controllers\Api\{
     ProductImageController,
     LaptopDetailController
 };
+use App\Models\Order;
+use App\Models\User;
 
 // ✅ Routes عامة (بدون تسجيل دخول)
 Route::post('/register', [AuthController::class, 'register']);
@@ -122,3 +124,10 @@ Route::middleware(['auth:sanctum', 'is_customer'])->group(function () {
 
 
 Route::middleware(['auth:sanctum'])->put('/me', [UserController::class, 'updateSelf']);
+Route::middleware('auth:sanctum')->get('/dashboard', function () {
+    return response()->json([
+        'orders_count' => Order::count(),
+        'users_count' => User::count(),
+        'me' => auth()->user(), // ✅ أضف هذا السطر
+    ]);
+});
