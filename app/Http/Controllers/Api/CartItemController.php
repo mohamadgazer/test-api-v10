@@ -14,7 +14,8 @@ class CartItemController extends Controller
 {
     public function index()
     {
-        return CartItem::with(['user', 'product', 'configurations'])->get();
+         return CartItem::with(['user', 'product', 'configurations'])
+        ->paginate(request('per_page', 10));
     }
 
     public function show($id)
