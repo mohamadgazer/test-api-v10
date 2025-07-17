@@ -8,10 +8,11 @@ use App\Http\Controllers\Controller;
 
 class CpuController extends Controller
 {
-    public function index()
-    {
-        return Cpu::all();
-    }
+public function index()
+{
+    return Cpu::paginate(request('per_page', 10));
+}
+
 
     public function store(Request $request)
     {

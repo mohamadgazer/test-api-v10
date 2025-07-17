@@ -8,11 +8,17 @@ use App\Http\Controllers\Controller;
 
 class LaptopDetailController extends Controller
 {
-    public function index()
-    {
-        return LaptopDetail::with(['productModel', 'rams', 'storages', 'defaultRam', 'defaultStorage'])->get();
+public function index()
+{
+    return LaptopDetail::with([
+        'productModel',
+        'rams',
+        'storages',
+        'defaultRam',
+        'defaultStorage'
+    ])->paginate(request('per_page', 10));
+}
 
-    }
 
 public function store(Request $request)
 {

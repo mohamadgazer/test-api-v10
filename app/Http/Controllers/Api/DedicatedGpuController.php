@@ -8,10 +8,10 @@ use App\Http\Controllers\Controller;
 
 class DedicatedGpuController extends Controller
 {
-    public function index()
-    {
-        return DedicatedGpu::all();
-    }
+public function index()
+{
+    return DedicatedGpu::paginate(request('per_page', 10));
+}
 
     public function store(Request $request)
     {

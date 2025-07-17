@@ -8,10 +8,11 @@ use App\Http\Controllers\Controller;
 
 class GpuController extends Controller
 {
-    public function index()
-    {
-        return Gpu::all();
-    }
+public function index()
+{
+    return Gpu::paginate(request('per_page', 10));
+}
+
 
     public function store(Request $request)
     {
