@@ -10,7 +10,7 @@ class StorageController extends Controller
 {
     public function index()
     {
-        return Storage::all();
+        return Storage::paginate(request('per_page', 10));
     }
 
     public function store(Request $request)

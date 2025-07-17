@@ -10,7 +10,7 @@ class ProductModelController extends Controller
 {
     public function index()
     {
-        return ProductModel::all();
+        return ProductModel::paginate(request('per_page', 10));
     }
 
     public function store(Request $request)

@@ -9,19 +9,21 @@ use App\Models\AdminLog;
 
 class UserController extends Controller
 {
-    public function index()
-    {
-        $users = User::all()->makeHidden(['password']);
+public function index()
+{
+    $users = User::paginate(request('per_page', 10));
+    $users->getCollection()->makeHidden(['password']);
 
-        AdminLog::create([
-            'admin_id' => auth()->id(),
-            'action' => 'view_users_list',
-            'target_model' => 'User',
-            'data' => null,
-        ]);
+    AdminLog::create([
+        'admin_id' => auth()->id(),
+        'action' => 'view_users_list',
+        'target_model' => 'User',
+        'data' => null,
+    ]);
 
-        return $users;
-    }
+    return response()->json($users);
+}
+
 
     public function show($id)
     {
@@ -126,7 +128,9 @@ class UserController extends Controller
 
     public function admins()
 {
-    $admins = User::where('is_admin', true)->get()->makeHidden(['password']);
+    $admins = User::where('is_admin', true)->paginate(request('per_page', 10));
+$admins->getCollection()->makeHidden(['password']);
+
 
     AdminLog::create([
         'admin_id' => auth()->id(),

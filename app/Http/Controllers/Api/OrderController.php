@@ -10,7 +10,7 @@ class OrderController extends Controller
 {
     public function index()
     {
-        return Order::with('user')->get(); // لو في علاقة مع user
+        return Order::with('user')->paginate(request('per_page', 10)); 
     }
 
     public function show($id)

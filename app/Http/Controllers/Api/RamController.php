@@ -10,7 +10,7 @@ class RamController extends Controller
 {
     public function index()
     {
-        return Ram::with('ramType')->get();
+        return Ram::with('ramType')->paginate(request('per_page', 10));
     }
 
     public function store(Request $request)

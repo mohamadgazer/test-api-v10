@@ -10,7 +10,7 @@ class OrderItemController extends Controller
 {
     public function index()
     {
-        return OrderItem::with(['order', 'product'])->get();
+        return OrderItem::with(['order', 'product'])->paginate(request('per_page', 10));
     }
 
     public function store(Request $request)
