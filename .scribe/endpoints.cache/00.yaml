@@ -1064,7 +1064,7 @@ endpoints:
       authenticated: false
       custom: []
     headers:
-      Content-Type: application/json
+      Content-Type: multipart/form-data
       Accept: application/json
     urlParameters: []
     cleanUrlParameters: []
@@ -1111,16 +1111,6 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         custom: []
-      image:
-        name: image
-        description: ''
-        required: false
-        example: consequatur
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        custom: []
       category_id:
         name: category_id
         description: 'The <code>id</code> of an existing record in the categories table.'
@@ -1141,9 +1131,20 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         custom: []
+      images:
+        name: images
+        description: 'Must be a file. Must be an image. Must not be greater than 5120 kilobytes.'
+        required: false
+        example:
+          - null
+        type: 'file[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
       is_composite:
         name: is_composite
-        description: ''
+        description: '5MB max.'
         required: false
         example: false
         type: boolean
@@ -1176,13 +1177,14 @@ endpoints:
       description: 'Dolores dolorum amet iste laborum eius est dolor.'
       price: 12
       stock: 66
-      image: consequatur
       category_id: consequatur
       brand_id: consequatur
       is_composite: false
       composite_type: consequatur
       composite_id: 17
-    fileParameters: []
+    fileParameters:
+      images:
+        - null
     responses: []
     responseFields: []
     auth: []
@@ -1205,7 +1207,7 @@ endpoints:
       authenticated: false
       custom: []
     headers:
-      Content-Type: application/json
+      Content-Type: multipart/form-data
       Accept: application/json
     urlParameters:
       id:
@@ -1263,16 +1265,6 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         custom: []
-      image:
-        name: image
-        description: ''
-        required: false
-        example: consequatur
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        custom: []
       category_id:
         name: category_id
         description: 'The <code>id</code> of an existing record in the categories table.'
@@ -1289,6 +1281,17 @@ endpoints:
         required: true
         example: consequatur
         type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      images:
+        name: images
+        description: 'Must be a file. Must be an image. Must not be greater than 5120 kilobytes.'
+        required: false
+        example:
+          - null
+        type: 'file[]'
         enumValues: []
         exampleWasSpecified: false
         nullable: false
@@ -1328,13 +1331,14 @@ endpoints:
       description: 'Dolores dolorum amet iste laborum eius est dolor.'
       price: 12
       stock: 66
-      image: consequatur
       category_id: consequatur
       brand_id: consequatur
       is_composite: false
       composite_type: consequatur
       composite_id: 17
-    fileParameters: []
+    fileParameters:
+      images:
+        - null
     responses: []
     responseFields: []
     auth: []
@@ -1927,8 +1931,19 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         custom: []
+      logo:
+        name: logo
+        description: 'Must be a valid URL.'
+        required: false
+        example: 'https://www.mueller.com/laborum-eius-est-dolor-dolores-minus-voluptatem'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
     cleanBodyParameters:
       name: consequatur
+      logo: 'https://www.mueller.com/laborum-eius-est-dolor-dolores-minus-voluptatem'
     fileParameters: []
     responses: []
     responseFields: []
@@ -2030,8 +2045,19 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         custom: []
+      logo:
+        name: logo
+        description: 'Must be a valid URL.'
+        required: false
+        example: 'https://www.mueller.com/laborum-eius-est-dolor-dolores-minus-voluptatem'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
     cleanBodyParameters:
       name: consequatur
+      logo: 'https://www.mueller.com/laborum-eius-est-dolor-dolores-minus-voluptatem'
     fileParameters: []
     responses: []
     responseFields: []

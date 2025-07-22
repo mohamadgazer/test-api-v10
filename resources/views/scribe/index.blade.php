@@ -340,7 +340,7 @@
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: July 15, 2025</li>
+        <li>Last updated: July 22, 2025</li>
     </ul>
 </div>
 
@@ -3039,21 +3039,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
     "http://localhost/api/products" \
-    --header "Content-Type: application/json" \
+    --header "Content-Type: multipart/form-data" \
     --header "Accept: application/json" \
-    --data "{
-    \"name\": \"consequatur\",
-    \"description\": \"Dolores dolorum amet iste laborum eius est dolor.\",
-    \"price\": 12,
-    \"stock\": 66,
-    \"image\": \"consequatur\",
-    \"category_id\": \"consequatur\",
-    \"brand_id\": \"consequatur\",
-    \"is_composite\": false,
-    \"composite_type\": \"consequatur\",
-    \"composite_id\": 17
-}"
-</code></pre></div>
+    --form "name=consequatur"\
+    --form "description=Dolores dolorum amet iste laborum eius est dolor."\
+    --form "price=12"\
+    --form "stock=66"\
+    --form "category_id=consequatur"\
+    --form "brand_id=consequatur"\
+    --form "is_composite="\
+    --form "composite_type=consequatur"\
+    --form "composite_id=17"\
+    --form "images[]=@C:\Users\gazer\AppData\Local\Temp\phpEE23.tmp" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -3062,27 +3059,26 @@ You can check the Dev Tools console for debugging information.</code></pre>
 );
 
 const headers = {
-    "Content-Type": "application/json",
+    "Content-Type": "multipart/form-data",
     "Accept": "application/json",
 };
 
-let body = {
-    "name": "consequatur",
-    "description": "Dolores dolorum amet iste laborum eius est dolor.",
-    "price": 12,
-    "stock": 66,
-    "image": "consequatur",
-    "category_id": "consequatur",
-    "brand_id": "consequatur",
-    "is_composite": false,
-    "composite_type": "consequatur",
-    "composite_id": 17
-};
+const body = new FormData();
+body.append('name', 'consequatur');
+body.append('description', 'Dolores dolorum amet iste laborum eius est dolor.');
+body.append('price', '12');
+body.append('stock', '66');
+body.append('category_id', 'consequatur');
+body.append('brand_id', 'consequatur');
+body.append('is_composite', '');
+body.append('composite_type', 'consequatur');
+body.append('composite_id', '17');
+body.append('images[]', document.querySelector('input[name="images[]"]').files[0]);
 
 fetch(url, {
     method: "POST",
     headers,
-    body: JSON.stringify(body),
+    body,
 }).then(response =&gt; response.json());</code></pre></div>
 
 </span>
@@ -3107,7 +3103,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <form id="form-POSTapi-products" data-method="POST"
       data-path="api/products"
       data-authed="0"
-      data-hasfiles="0"
+      data-hasfiles="1"
       data-isarraybody="0"
       autocomplete="off"
       onsubmit="event.preventDefault(); executeTryOut('POSTapi-products', this);">
@@ -3142,10 +3138,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="Content-Type"                data-endpoint="POSTapi-products"
-               value="application/json"
+               value="multipart/form-data"
                data-component="header">
     <br>
-<p>Example: <code>application/json</code></p>
+<p>Example: <code>multipart/form-data</code></p>
             </div>
                                 <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
@@ -3204,17 +3200,6 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>Must be at least 0. Example: <code>66</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>image</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
-<i>optional</i> &nbsp;
-                <input type="text" style="display: none"
-                              name="image"                data-endpoint="POSTapi-products"
-               value="consequatur"
-               data-component="body">
-    <br>
-<p>Example: <code>consequatur</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>category_id</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
  &nbsp;
@@ -3237,6 +3222,19 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>The <code>id</code> of an existing record in the brands table. Example: <code>consequatur</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>images</code></b>&nbsp;&nbsp;
+<small>file[]</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="file" style="display: none"
+                              name="images[0]"                data-endpoint="POSTapi-products"
+               data-component="body">
+        <input type="file" style="display: none"
+               name="images[1]"                data-endpoint="POSTapi-products"
+               data-component="body">
+    <br>
+<p>Must be a file. Must be an image. Must not be greater than 5120 kilobytes.</p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>is_composite</code></b>&nbsp;&nbsp;
 <small>boolean</small>&nbsp;
 <i>optional</i> &nbsp;
@@ -3255,7 +3253,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>5MB max. Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>composite_type</code></b>&nbsp;&nbsp;
@@ -3295,21 +3293,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
     "http://localhost/api/products/consequatur" \
-    --header "Content-Type: application/json" \
+    --header "Content-Type: multipart/form-data" \
     --header "Accept: application/json" \
-    --data "{
-    \"name\": \"consequatur\",
-    \"description\": \"Dolores dolorum amet iste laborum eius est dolor.\",
-    \"price\": 12,
-    \"stock\": 66,
-    \"image\": \"consequatur\",
-    \"category_id\": \"consequatur\",
-    \"brand_id\": \"consequatur\",
-    \"is_composite\": false,
-    \"composite_type\": \"consequatur\",
-    \"composite_id\": 17
-}"
-</code></pre></div>
+    --form "name=consequatur"\
+    --form "description=Dolores dolorum amet iste laborum eius est dolor."\
+    --form "price=12"\
+    --form "stock=66"\
+    --form "category_id=consequatur"\
+    --form "brand_id=consequatur"\
+    --form "is_composite="\
+    --form "composite_type=consequatur"\
+    --form "composite_id=17"\
+    --form "images[]=@C:\Users\gazer\AppData\Local\Temp\phpEE43.tmp" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -3318,27 +3313,26 @@ You can check the Dev Tools console for debugging information.</code></pre>
 );
 
 const headers = {
-    "Content-Type": "application/json",
+    "Content-Type": "multipart/form-data",
     "Accept": "application/json",
 };
 
-let body = {
-    "name": "consequatur",
-    "description": "Dolores dolorum amet iste laborum eius est dolor.",
-    "price": 12,
-    "stock": 66,
-    "image": "consequatur",
-    "category_id": "consequatur",
-    "brand_id": "consequatur",
-    "is_composite": false,
-    "composite_type": "consequatur",
-    "composite_id": 17
-};
+const body = new FormData();
+body.append('name', 'consequatur');
+body.append('description', 'Dolores dolorum amet iste laborum eius est dolor.');
+body.append('price', '12');
+body.append('stock', '66');
+body.append('category_id', 'consequatur');
+body.append('brand_id', 'consequatur');
+body.append('is_composite', '');
+body.append('composite_type', 'consequatur');
+body.append('composite_id', '17');
+body.append('images[]', document.querySelector('input[name="images[]"]').files[0]);
 
 fetch(url, {
     method: "PUT",
     headers,
-    body: JSON.stringify(body),
+    body,
 }).then(response =&gt; response.json());</code></pre></div>
 
 </span>
@@ -3363,7 +3357,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <form id="form-PUTapi-products--id-" data-method="PUT"
       data-path="api/products/{id}"
       data-authed="0"
-      data-hasfiles="0"
+      data-hasfiles="1"
       data-isarraybody="0"
       autocomplete="off"
       onsubmit="event.preventDefault(); executeTryOut('PUTapi-products--id-', this);">
@@ -3402,10 +3396,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="Content-Type"                data-endpoint="PUTapi-products--id-"
-               value="application/json"
+               value="multipart/form-data"
                data-component="header">
     <br>
-<p>Example: <code>application/json</code></p>
+<p>Example: <code>multipart/form-data</code></p>
             </div>
                                 <div style="padding-left: 28px; clear: unset;">
                 <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
@@ -3476,17 +3470,6 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>Must be at least 0. Example: <code>66</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
-            <b style="line-height: 2;"><code>image</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
-<i>optional</i> &nbsp;
-                <input type="text" style="display: none"
-                              name="image"                data-endpoint="PUTapi-products--id-"
-               value="consequatur"
-               data-component="body">
-    <br>
-<p>Example: <code>consequatur</code></p>
-        </div>
-                <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>category_id</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
  &nbsp;
@@ -3507,6 +3490,19 @@ You can check the Dev Tools console for debugging information.</code></pre>
                data-component="body">
     <br>
 <p>The <code>id</code> of an existing record in the brands table. Example: <code>consequatur</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>images</code></b>&nbsp;&nbsp;
+<small>file[]</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="file" style="display: none"
+                              name="images[0]"                data-endpoint="PUTapi-products--id-"
+               data-component="body">
+        <input type="file" style="display: none"
+               name="images[1]"                data-endpoint="PUTapi-products--id-"
+               data-component="body">
+    <br>
+<p>Must be a file. Must be an image. Must not be greater than 5120 kilobytes.</p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>is_composite</code></b>&nbsp;&nbsp;
@@ -5074,7 +5070,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"name\": \"consequatur\"
+    \"name\": \"consequatur\",
+    \"logo\": \"https:\\/\\/www.mueller.com\\/laborum-eius-est-dolor-dolores-minus-voluptatem\"
 }"
 </code></pre></div>
 
@@ -5090,7 +5087,8 @@ const headers = {
 };
 
 let body = {
-    "name": "consequatur"
+    "name": "consequatur",
+    "logo": "https:\/\/www.mueller.com\/laborum-eius-est-dolor-dolores-minus-voluptatem"
 };
 
 fetch(url, {
@@ -5183,6 +5181,17 @@ You can check the Dev Tools console for debugging information.</code></pre>
                data-component="body">
     <br>
 <p>Example: <code>consequatur</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>logo</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="logo"                data-endpoint="POSTapi-brands"
+               value="https://www.mueller.com/laborum-eius-est-dolor-dolores-minus-voluptatem"
+               data-component="body">
+    <br>
+<p>Must be a valid URL. Example: <code>https://www.mueller.com/laborum-eius-est-dolor-dolores-minus-voluptatem</code></p>
         </div>
         </form>
 
@@ -5339,7 +5348,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"name\": \"consequatur\"
+    \"name\": \"consequatur\",
+    \"logo\": \"https:\\/\\/www.mueller.com\\/laborum-eius-est-dolor-dolores-minus-voluptatem\"
 }"
 </code></pre></div>
 
@@ -5355,7 +5365,8 @@ const headers = {
 };
 
 let body = {
-    "name": "consequatur"
+    "name": "consequatur",
+    "logo": "https:\/\/www.mueller.com\/laborum-eius-est-dolor-dolores-minus-voluptatem"
 };
 
 fetch(url, {
@@ -5464,6 +5475,17 @@ You can check the Dev Tools console for debugging information.</code></pre>
                data-component="body">
     <br>
 <p>Example: <code>consequatur</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>logo</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+                <input type="text" style="display: none"
+                              name="logo"                data-endpoint="PUTapi-brands--id-"
+               value="https://www.mueller.com/laborum-eius-est-dolor-dolores-minus-voluptatem"
+               data-component="body">
+    <br>
+<p>Must be a valid URL. Example: <code>https://www.mueller.com/laborum-eius-est-dolor-dolores-minus-voluptatem</code></p>
         </div>
         </form>
 
