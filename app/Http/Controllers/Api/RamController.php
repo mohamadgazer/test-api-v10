@@ -12,9 +12,26 @@ use Symfony\Component\HttpFoundation\Response;
 class RamController extends Controller
 {
     /**
-     * Display a paginated listing of the RAMs with their types.
-     *
-     * @return \Illuminate\Http\JsonResponse
+     * @OA\Get(
+     *     path="/rams",
+     *     summary="Get paginated list of RAMs",
+     *     tags={"RAM"},
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Items per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=10)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", type="object", ref="#/components/schemas/RamPaginated")
+     *         )
+     *     )
+     * )
      */
     public function index()
     {
@@ -27,10 +44,79 @@ class RamController extends Controller
     }
 
     /**
-     * Store a newly created RAM entry in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @OA\Get(
+     *     path="/rams/{id}",
+     *     summary="Get a specific RAM by ID",
+     *     tags={"RAM"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID of RAM to return",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", type="object", ref="#/components/schemas/RamWithType")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="RAM not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="RAM not found")
+     *         )
+     *     )
+     * )
+     */
+    public function show($id)
+    {
+        try {
+            $ram = Ram::with('ramType')->findOrFail($id);
+
+            return response()->json([
+                'success' => true,
+                'data' => $ram
+            ]);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'RAM not found'
+            ], Response::HTTP_NOT_FOUND);
+        }
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/rams",
+     *     summary="Create a new RAM entry",
+     *     tags={"RAM"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/RamCreate")
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="RAM created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", type="object", ref="#/components/schemas/RamWithType"),
+     *             @OA\Property(property="message", type="string", example="RAM created successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error or duplicate entry",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     )
+     * )
      */
     public function store(Request $request)
     {
@@ -40,6 +126,20 @@ class RamController extends Controller
                 'price' => 'required|numeric|min:0',
                 'ram_type_id' => 'required|exists:ram_types,id',
             ]);
+
+            // Check for existing RAM with same type and size
+            $existingRam = Ram::where('size_gb', $validated['size_gb'])
+                ->where('ram_type_id', $validated['ram_type_id'])
+                ->first();
+
+            if ($existingRam) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => [
+                        'size_gb' => ['A RAM with this size and type already exists.']
+                    ]
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
 
             $ram = Ram::create($validated);
 
@@ -57,11 +157,47 @@ class RamController extends Controller
     }
 
     /**
-     * Update the specified RAM entry.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\JsonResponse
+     * @OA\Put(
+     *     path="/rams/{id}",
+     *     summary="Update an existing RAM entry",
+     *     tags={"RAM"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID of RAM to update",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(ref="#/components/schemas/RamCreate")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="RAM updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", type="object", ref="#/components/schemas/RamWithType"),
+     *             @OA\Property(property="message", type="string", example="RAM updated successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="RAM not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="RAM not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error or duplicate entry",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     )
+     * )
      */
     public function update(Request $request, $id)
     {
@@ -73,6 +209,21 @@ class RamController extends Controller
                 'price' => 'required|numeric|min:0',
                 'ram_type_id' => 'required|exists:ram_types,id',
             ]);
+
+            // Check for existing RAM with same type and size (excluding current one)
+            $existingRam = Ram::where('size_gb', $validated['size_gb'])
+                ->where('ram_type_id', $validated['ram_type_id'])
+                ->where('id', '!=', $id)
+                ->first();
+
+            if ($existingRam) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => [
+                        'size_gb' => ['A RAM with this size and type already exists.']
+                    ]
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
 
             $ram->update($validated);
 
@@ -95,10 +246,34 @@ class RamController extends Controller
     }
 
     /**
-     * Remove the specified RAM entry from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\JsonResponse
+     * @OA\Delete(
+     *     path="/rams/{id}",
+     *     summary="Delete a RAM entry",
+     *     tags={"RAM"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID of RAM to delete",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="RAM deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="RAM deleted successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="RAM not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="RAM not found")
+     *         )
+     *     )
+     * )
      */
     public function destroy($id)
     {
