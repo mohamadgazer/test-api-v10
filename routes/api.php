@@ -134,3 +134,5 @@ Route::middleware('auth:sanctum')->get('/dashboard', function () {
         'me' => auth()->user(), // ✅ أضف هذا السطر
     ]);
 });
+
+ Route::get('products', [ProductController::class, 'index']);

@@ -1,0 +1,458 @@
+name: 'Cart Items'
+description: |-
+
+  APIs for managing items inside user's shopping cart
+endpoints:
+  -
+    httpMethods:
+      - GET
+    uri: api/cart-items
+    metadata:
+      groupName: 'Cart Items'
+      groupDescription: |-
+
+        APIs for managing items inside user's shopping cart
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get all cart items for authenticated user (paginated)'
+      description: ''
+      authenticated: true
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      per_page:
+        name: per_page
+        description: 'Number of items per page.'
+        required: false
+        example: 10
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+    cleanQueryParameters:
+      per_page: 10
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "data": [
+              {
+                "id": 1,
+                "user_id": 1,
+                "product_id": 5,
+                "quantity": 2,
+                "final_price": 1500.00
+              }
+            ]
+          }
+        headers: []
+        description: Success
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - POST
+    uri: api/cart-items
+    metadata:
+      groupName: 'Cart Items'
+      groupDescription: |-
+
+        APIs for managing items inside user's shopping cart
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Add new item to cart (for authenticated user)'
+      description: ''
+      authenticated: true
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      product_id:
+        name: product_id
+        description: 'Product ID.'
+        required: true
+        example: 3
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+      quantity:
+        name: quantity
+        description: 'Quantity of the product. Minimum: 1.'
+        required: true
+        example: 2
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+      configurations:
+        name: configurations
+        description: 'optional List of configurations'
+        required: false
+        example:
+          - consequatur
+        type: 'string[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      'configurations[].key':
+        name: 'configurations[].key'
+        description: 'Configuration key (e.g. ram_id).'
+        required: true
+        example: ram_id
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+      'configurations[].value':
+        name: 'configurations[].value'
+        description: 'Configuration value (e.g. 2).'
+        required: true
+        example: '2'
+        type: mixed
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+    cleanBodyParameters:
+      product_id: 3
+      quantity: 2
+      configurations:
+        - consequatur
+    fileParameters: []
+    responses:
+      -
+        status: 201
+        content: |-
+          {
+            "success": true,
+            "data": {
+              "id": 1,
+              "user_id": 1,
+              "product_id": 3,
+              "quantity": 2,
+              "final_price": 1200,
+              "configurations": [...]
+            },
+            "message": "Item added to cart successfully"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 422
+        content: |-
+          {
+            "success": false,
+            "message": "Validation error",
+            "errors": { ... }
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - GET
+    uri: 'api/cart-items/{id}'
+    metadata:
+      groupName: 'Cart Items'
+      groupDescription: |-
+
+        APIs for managing items inside user's shopping cart
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get a specific cart item (only if belongs to authenticated user)'
+      description: ''
+      authenticated: true
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        name: id
+        description: 'ID of the cart item.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "data": {
+              "id": 1,
+              "user_id": 1,
+              "product_id": 5,
+              "quantity": 2,
+              "final_price": 1500.00,
+              "configurations": [...]
+            }
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 403
+        content: |-
+          {
+            "success": false,
+            "message": "You don't have permission to access this cart item"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 404
+        content: |-
+          {
+            "success": false,
+            "message": "Cart item not found"
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'api/cart-items/{id}'
+    metadata:
+      groupName: 'Cart Items'
+      groupDescription: |-
+
+        APIs for managing items inside user's shopping cart
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Update a cart item (only if belongs to authenticated user)'
+      description: ''
+      authenticated: true
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        name: id
+        description: 'Cart item ID.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      quantity:
+        name: quantity
+        description: 'Updated quantity.'
+        required: false
+        example: 3
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+      configurations:
+        name: configurations
+        description: 'optional List of configurations to update'
+        required: false
+        example:
+          - consequatur
+        type: 'string[]'
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        custom: []
+      'configurations[].key':
+        name: 'configurations[].key'
+        description: 'This field is required when <code>configurations</code> is present.'
+        required: false
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      'configurations[].value':
+        name: 'configurations[].value'
+        description: 'This field is required when <code>configurations</code> is present.'
+        required: false
+        example: null
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanBodyParameters:
+      quantity: 3
+      configurations:
+        - consequatur
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "data": {
+              "id": 1,
+              "quantity": 3,
+              "configurations": [...]
+            },
+            "message": "Cart item updated successfully"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 403
+        content: |-
+          {
+            "success": false,
+            "message": "You don't have permission to update this cart item"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 404
+        content: |-
+          {
+            "success": false,
+            "message": "Cart item not found"
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
+  -
+    httpMethods:
+      - DELETE
+    uri: 'api/cart-items/{id}'
+    metadata:
+      groupName: 'Cart Items'
+      groupDescription: |-
+
+        APIs for managing items inside user's shopping cart
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Delete a cart item (only if belongs to authenticated user)'
+      description: ''
+      authenticated: true
+      custom: []
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        name: id
+        description: 'ID of the cart item to delete.'
+        required: true
+        example: 5
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      id: 5
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        status: 200
+        content: |-
+          {
+            "success": true,
+            "message": "Cart item deleted successfully"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 403
+        content: |-
+          {
+            "success": false,
+            "message": "You don't have permission to delete this cart item"
+          }
+        headers: []
+        description: ''
+        custom: []
+      -
+        status: 404
+        content: |-
+          {
+            "success": false,
+            "message": "Cart item not found"
+          }
+        headers: []
+        description: ''
+        custom: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+    custom: []
