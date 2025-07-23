@@ -3050,7 +3050,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --form "is_composite="\
     --form "composite_type=consequatur"\
     --form "composite_id=17"\
-    --form "images[]=@C:\Users\gazer\AppData\Local\Temp\phpEE23.tmp" </code></pre></div>
+    --form "images[]=@C:\Users\gazer\AppData\Local\Temp\phpD580.tmp" </code></pre></div>
 
 
 <div class="javascript-example">
@@ -3304,7 +3304,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --form "is_composite="\
     --form "composite_type=consequatur"\
     --form "composite_id=17"\
-    --form "images[]=@C:\Users\gazer\AppData\Local\Temp\phpEE43.tmp" </code></pre></div>
+    --form "images[]=@C:\Users\gazer\AppData\Local\Temp\phpD5A0.tmp" </code></pre></div>
 
 
 <div class="javascript-example">

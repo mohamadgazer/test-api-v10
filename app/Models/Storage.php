@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Storage extends Model
 {
-    protected $fillable = ['type', 'size_gb'];
+   protected $fillable = ['size', 'price', 'storage_type_id'];
+
 
     public function products()
     {

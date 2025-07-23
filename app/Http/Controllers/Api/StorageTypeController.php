@@ -5,46 +5,120 @@ namespace App\Http\Controllers\Api;
 use App\Models\StorageType;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Validation\ValidationException;
 
 class StorageTypeController extends Controller
 {
-    public function index()
+    /**
+     * Display a paginated list of storage types.
+     *
+     * @return JsonResponse
+     */
+    public function index(): JsonResponse
     {
-        return StorageType::paginate(request('per_page', 10));
+        $perPage = request('per_page', 10);
+        $storageTypes = StorageType::paginate($perPage);
+
+        return response()->json([
+            'message' => 'Storage types retrieved successfully.',
+            'data' => $storageTypes
+        ]);
     }
 
-    public function store(Request $request)
+    /**
+     * Store a newly created storage type.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     * @throws ValidationException
+     */
+    public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'name' => 'required|string|unique:StorageType,name',
+            'name' => 'required|string|unique:storage_types,name',
         ]);
 
-        return RamType::create($validated);
+        $storageType = StorageType::create($validated);
+
+        return response()->json([
+            'message' => 'Storage type created successfully.',
+            'data' => $storageType,
+        ], 201);
     }
 
-    public function show($id)
+    /**
+     * Display the specified storage type.
+     *
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function show(int $id): JsonResponse
     {
-        return StorageType::findOrFail($id);
+        try {
+            $storageType = StorageType::findOrFail($id);
+
+            return response()->json([
+                'message' => 'Storage type retrieved successfully.',
+                'data' => $storageType,
+            ]);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Storage type not found.',
+            ], 404);
+        }
     }
 
-    public function update(Request $request, $id)
+    /**
+     * Update the specified storage type.
+     *
+     * @param Request $request
+     * @param int $id
+     * @return JsonResponse
+     * @throws ValidationException
+     */
+    public function update(Request $request, int $id): JsonResponse
     {
-        $ramType = StorageType::findOrFail($id);
+        try {
+            $storageType = StorageType::findOrFail($id);
 
-        $validated = $request->validate([
-            'name' => 'required|string|unique:StorageType,name,' . $id,
-        ]);
+            $validated = $request->validate([
+                'name' => 'required|string|unique:storage_types,name,' . $id,
+            ]);
 
-        $ramType->update($validated);
+            $storageType->update($validated);
 
-        return $ramType;
+            return response()->json([
+                'message' => 'Storage type updated successfully.',
+                'data' => $storageType,
+            ]);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Storage type not found. Unable to update.',
+            ], 404);
+        }
     }
 
-    public function destroy($id)
+    /**
+     * Remove the specified storage type.
+     *
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function destroy(int $id): JsonResponse
     {
-        $ramType = StorageType::findOrFail($id);
-        $ramType->delete();
+        try {
+            $storageType = StorageType::findOrFail($id);
+            $storageType->delete();
 
-        return response()->json(['message' => 'Deleted successfully']);
+            return response()->json([
+                'message' => 'Storage type deleted successfully.',
+            ]);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Storage type not found. Unable to delete.',
+            ], 404);
+        }
     }
 }
