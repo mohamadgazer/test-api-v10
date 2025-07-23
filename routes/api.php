@@ -105,6 +105,8 @@ Route::middleware(['auth:sanctum', 'is_admin', 'role:manager'])->group(function 
         'product-models' => ProductModelController::class,
         'product-images' => ProductImageController::class,
         'laptop-details' => LaptopDetailController::class,
+        'order-items' => OrderItemController::class,
+            // Route::apiResource('order-items', OrderItemController::class);
     ]);
 });
 
@@ -115,6 +117,7 @@ Route::middleware(['auth:sanctum', 'is_admin'])->group(function () {
     Route::get('products/{id}', [ProductController::class, 'show']);
     Route::get('orders', [OrderController::class, 'index']);
     Route::get('users', [UserController::class, 'index']);
+        Route::get('/admins', [UserController::class, 'admins']);
 });
 
 
