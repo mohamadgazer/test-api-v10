@@ -8,10 +8,32 @@ use App\Http\Controllers\Controller;
 use Illuminate\Database\QueryException;
 use Illuminate\Validation\ValidationException;
 
+/**
+ * @OA\Tag(
+ *     name="Storage",
+ *     description="Storage management operations"
+ * )
+ */
 class StorageController extends Controller
 {
     /**
      * Display a paginated list of storages.
+     *
+     * @OA\Get(
+     *     path="/api/storages",
+     *     summary="Get all storages",
+     *     tags={"Storage"},
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=10)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Storages fetched successfully."
+     *     )
+     * )
      */
     public function index()
     {
@@ -23,6 +45,25 @@ class StorageController extends Controller
 
     /**
      * Store a newly created storage.
+     *
+     * @OA\Post(
+     *     path="/api/storages",
+     *     summary="Create a new storage",
+     *     security={{"bearerAuth":{}}},
+     *     tags={"Storage"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"size", "storage_type_id", "price"},
+     *             @OA\Property(property="size", type="number", example=256),
+     *             @OA\Property(property="storage_type_id", type="integer", example=1),
+     *             @OA\Property(property="price", type="number", example=100.5)
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Storage created successfully."),
+     *     @OA\Response(response=422, description="Validation failed."),
+     *     @OA\Response(response=500, description="Server error.")
+     * )
      */
     public function store(Request $request)
     {
@@ -54,6 +95,20 @@ class StorageController extends Controller
 
     /**
      * Display the specified storage.
+     *
+     * @OA\Get(
+     *     path="/api/storages/{id}",
+     *     summary="Get a specific storage by ID",
+     *     tags={"Storage"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Storage fetched successfully."),
+     *     @OA\Response(response=404, description="Storage not found.")
+     * )
      */
     public function show($id)
     {
@@ -73,6 +128,31 @@ class StorageController extends Controller
 
     /**
      * Update the specified storage.
+     *
+     * @OA\Put(
+     *     path="/api/storages/{id}",
+     *     summary="Update an existing storage",
+     *     security={{"bearerAuth":{}}},
+     *     tags={"Storage"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=false,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="size", type="number", example=512),
+     *             @OA\Property(property="storage_type_id", type="integer", example=2),
+     *             @OA\Property(property="price", type="number", example=120.99)
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Storage updated successfully."),
+     *     @OA\Response(response=404, description="Storage not found."),
+     *     @OA\Response(response=422, description="Validation failed."),
+     *     @OA\Response(response=500, description="Server error.")
+     * )
      */
     public function update(Request $request, $id)
     {
@@ -112,6 +192,23 @@ class StorageController extends Controller
 
     /**
      * Remove the specified storage.
+     *
+     * @OA\Delete(
+     *     path="/api/storages/{id}",
+     *     summary="Delete a storage",
+     *     security={{"bearerAuth":{}}},
+     *     tags={"Storage"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Storage deleted successfully."),
+     *     @OA\Response(response=404, description="Storage not found."),
+     *     @OA\Response(response=409, description="Conflict: cannot delete."),
+     *     @OA\Response(response=500, description="Server error.")
+     * )
      */
     public function destroy($id)
     {
@@ -133,7 +230,7 @@ class StorageController extends Controller
             return response()->json([
                 'message' => 'Cannot delete storage: it is being used elsewhere.',
                 'error' => $e->getMessage(),
-            ], 409); // Conflict
+            ], 409);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Something went wrong during deletion.',
