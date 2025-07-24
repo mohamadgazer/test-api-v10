@@ -8,38 +8,58 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 /**
- * @group Authentication
- *
- * APIs for user authentication (register, login, logout)
+ * @OA\Tag(
+ *     name="Authentication",
+ *     description="APIs for user authentication (register, login, logout)"
+ * )
  */
 class AuthController extends Controller
 {
     /**
-     * Register a new user
-     *
-     * @bodyParam name string required User name. Example: John Doe
-     * @bodyParam email string required Valid email. Example: john@example.com
-     * @bodyParam password string required Password (min 6 characters). Example: secret123
-     *
-     * @response 201 {
-     *   "user": {
-     *     "id": 1,
-     *     "name": "John Doe",
-     *     "email": "john@example.com",
-     *     "created_at": "2025-07-15T23:59:00.000000Z",
-     *     "updated_at": "2025-07-15T23:59:00.000000Z"
-     *   },
-     *   "token": "generated_token_here"
-     * }
-     *
-     * @response 422 {
-     *   "errors": {
-     *     "email": ["The email has already been taken."]
-     *   }
-     * }
+     * @OA\Post(
+     *     path="/api/register",
+     *     operationId="registerUser",
+     *     tags={"Authentication"},
+     *     summary="Register a new user",
+     *     description="Creates a new user account and returns an access token",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name","email","password"},
+     *             @OA\Property(property="name", type="string", example="John Doe"),
+     *             @OA\Property(property="email", type="string", format="email", example="john@example.com"),
+     *             @OA\Property(property="password", type="string", format="password", example="secret123", minLength=6)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="User registered successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="user", ref="#/components/schemas/User"),
+     *             @OA\Property(property="token", type="string", example="generated_token_here")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="The given data was invalid."),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unexpected error occurred during registration."),
+     *             @OA\Property(property="error", type="string")
+     *         )
+     *     )
+     * )
      */
     public function register(Request $request)
     {
@@ -61,49 +81,69 @@ class AuthController extends Controller
             return response()->json([
                 'user' => $user,
                 'token' => $token
-            ], 201);
+            ], Response::HTTP_CREATED);
+
         } catch (ValidationException $e) {
-            return response()->json(['errors' => $e->errors()], 422);
+            return response()->json([
+                'message' => 'The given data was invalid.',
+                'errors' => $e->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         } catch (Throwable $e) {
             return response()->json([
                 'message' => 'Unexpected error occurred during registration.',
                 'error' => $e->getMessage(),
-            ], 500);
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
-     * Login a user and get token
-     *
-     * @bodyParam email string required Email address. Example: john@example.com
-     * @bodyParam password string required User password. Example: secret123
-     *
-     * @response 200 {
-     *   "access_token": "token_here",
-     *   "token_type": "Bearer",
-     *   "user": {
-     *     "id": 1,
-     *     "name": "John Doe",
-     *     "email": "john@example.com",
-     *     "is_admin": false,
-     *     "role": "user",
-     *     "phone": null,
-     *     "address": null,
-     *     "created_at": "...",
-     *     "updated_at": "..."
-     *   }
-     * }
-     *
-     * @response 401 {
-     *   "message": "Invalid credentials"
-     * }
-     *
-     * @response 422 {
-     *   "errors": {
-     *     "email": ["The email field is required."],
-     *     "password": ["The password field is required."]
-     *   }
-     * }
+     * @OA\Post(
+     *     path="/api/login",
+     *     operationId="loginUser",
+     *     tags={"Authentication"},
+     *     summary="Authenticate user",
+     *     description="Logs in a user and returns an access token",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email","password"},
+     *             @OA\Property(property="email", type="string", format="email", example="john@example.com"),
+     *             @OA\Property(property="password", type="string", format="password", example="secret123")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Login successful",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="access_token", type="string", example="token_here"),
+     *             @OA\Property(property="token_type", type="string", example="Bearer"),
+     *             @OA\Property(property="user", ref="#/components/schemas/User")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Invalid credentials",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Invalid credentials")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="The given data was invalid."),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unexpected error occurred during login."),
+     *             @OA\Property(property="error", type="string")
+     *         )
+     *     )
+     * )
      */
     public function login(Request $request)
     {
@@ -116,7 +156,9 @@ class AuthController extends Controller
             $user = User::where('email', $request->email)->first();
 
             if (!$user || !Hash::check($request->password, $user->password)) {
-                return response()->json(['message' => 'Invalid credentials'], 401);
+                return response()->json([
+                    'message' => 'Invalid credentials'
+                ], Response::HTTP_UNAUTHORIZED);
             }
 
             $token = $user->createToken('auth_token')->plainTextToken;
@@ -124,53 +166,68 @@ class AuthController extends Controller
             return response()->json([
                 'access_token' => $token,
                 'token_type' => 'Bearer',
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'is_admin' => $user->is_admin,
-                    'role' => $user->role,
-                    'phone' => $user->phone,
-                    'address' => $user->address,
-                    'created_at' => $user->created_at,
-                    'updated_at' => $user->updated_at,
-                ]
+                'user' => $user
             ]);
+
         } catch (ValidationException $e) {
-            return response()->json(['errors' => $e->errors()], 422);
+            return response()->json([
+                'message' => 'The given data was invalid.',
+                'errors' => $e->errors()
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         } catch (Throwable $e) {
             return response()->json([
                 'message' => 'Unexpected error occurred during login.',
                 'error' => $e->getMessage(),
-            ], 500);
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
-     * Logout the authenticated user
-     *
-     * @authenticated
-     *
-     * @response 200 {
-     *   "message": "Logged out"
-     * }
-     *
-     * @response 500 {
-     *   "message": "Unexpected error occurred during logout.",
-     *   "error": "Exception message"
-     * }
+     * @OA\Post(
+     *     path="/api/logout",
+     *     operationId="logoutUser",
+     *     tags={"Authentication"},
+     *     summary="Logout user",
+     *     description="Revokes the current access token",
+     *     security={{"bearerAuth": {}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Logout successful",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Logged out")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unexpected error occurred during logout."),
+     *             @OA\Property(property="error", type="string")
+     *         )
+     *     )
+     * )
      */
     public function logout(Request $request)
     {
         try {
             $request->user()->currentAccessToken()->delete();
 
-            return response()->json(['message' => 'Logged out']);
+            return response()->json([
+                'message' => 'Logged out'
+            ]);
+
         } catch (Throwable $e) {
             return response()->json([
                 'message' => 'Unexpected error occurred during logout.',
                 'error' => $e->getMessage(),
-            ], 500);
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

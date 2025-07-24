@@ -16,9 +16,10 @@ endpoints:
       subgroupDescription: ''
       title: 'List all laptop details (paginated).'
       description: 'Retrieve a paginated list of laptop details with related models.'
-      authenticated: false
+      authenticated: true
       custom: []
     headers:
+      Authorization: 'Bearer {token}'
       Content-Type: application/json
       Accept: application/json
     urlParameters: []
@@ -79,7 +80,10 @@ endpoints:
         description: ''
         custom: []
     responseFields: []
-    auth: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer YOUR_TEST_TOKEN'
     controller: null
     method: null
     route: null
@@ -97,9 +101,10 @@ endpoints:
       subgroupDescription: ''
       title: 'Create a new laptop detail.'
       description: ''
-      authenticated: false
+      authenticated: true
       custom: []
     headers:
+      Authorization: 'Bearer {token}'
       Content-Type: application/json
       Accept: application/json
     urlParameters: []
@@ -257,7 +262,10 @@ endpoints:
         description: ''
         custom: []
     responseFields: []
-    auth: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer YOUR_TEST_TOKEN'
     controller: null
     method: null
     route: null
@@ -275,9 +283,10 @@ endpoints:
       subgroupDescription: ''
       title: 'Show a specific laptop detail by ID.'
       description: ''
-      authenticated: false
+      authenticated: true
       custom: []
     headers:
+      Authorization: 'Bearer {token}'
       Content-Type: application/json
       Accept: application/json
     urlParameters:
@@ -320,7 +329,10 @@ endpoints:
         description: ''
         custom: []
     responseFields: []
-    auth: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer YOUR_TEST_TOKEN'
     controller: null
     method: null
     route: null
@@ -341,9 +353,10 @@ endpoints:
       description: |-
         Allows updating one or more fields of a laptop detail.
         Fields not provided will remain unchanged.
-      authenticated: false
+      authenticated: true
       custom: []
     headers:
+      Authorization: 'Bearer {token}'
       Content-Type: application/json
       Accept: application/json
     urlParameters:
@@ -550,7 +563,10 @@ endpoints:
         description: ''
         custom: []
     responseFields: []
-    auth: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer YOUR_TEST_TOKEN'
     controller: null
     method: null
     route: null
@@ -568,9 +584,10 @@ endpoints:
       subgroupDescription: ''
       title: 'Delete a laptop detail by ID.'
       description: ''
-      authenticated: false
+      authenticated: true
       custom: []
     headers:
+      Authorization: 'Bearer {token}'
       Content-Type: application/json
       Accept: application/json
     urlParameters:
@@ -613,7 +630,10 @@ endpoints:
         description: ''
         custom: []
     responseFields: []
-    auth: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer YOUR_TEST_TOKEN'
     controller: null
     method: null
     route: null

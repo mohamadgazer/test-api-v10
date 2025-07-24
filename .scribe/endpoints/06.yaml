@@ -16,9 +16,10 @@ endpoints:
       subgroupDescription: ''
       title: 'List all categories (paginated)'
       description: 'Retrieve a paginated list of categories.'
-      authenticated: false
+      authenticated: true
       custom: []
     headers:
+      Authorization: 'Bearer {token}'
       Content-Type: application/json
       Accept: application/json
     urlParameters: []
@@ -70,7 +71,10 @@ endpoints:
         description: ''
         custom: []
     responseFields: []
-    auth: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer YOUR_TEST_TOKEN'
     controller: null
     method: null
     route: null
@@ -88,9 +92,10 @@ endpoints:
       subgroupDescription: ''
       title: 'Create a new category'
       description: ''
-      authenticated: false
+      authenticated: true
       custom: []
     headers:
+      Authorization: 'Bearer {token}'
       Content-Type: application/json
       Accept: application/json
     urlParameters: []
@@ -150,7 +155,10 @@ endpoints:
         description: ''
         custom: []
     responseFields: []
-    auth: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer YOUR_TEST_TOKEN'
     controller: null
     method: null
     route: null
@@ -168,9 +176,10 @@ endpoints:
       subgroupDescription: ''
       title: 'Get a specific category'
       description: ''
-      authenticated: false
+      authenticated: true
       custom: []
     headers:
+      Authorization: 'Bearer {token}'
       Content-Type: application/json
       Accept: application/json
     urlParameters:
@@ -215,7 +224,10 @@ endpoints:
         description: ''
         custom: []
     responseFields: []
-    auth: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer YOUR_TEST_TOKEN'
     controller: null
     method: null
     route: null
@@ -234,9 +246,10 @@ endpoints:
       subgroupDescription: ''
       title: 'Update an existing category'
       description: ''
-      authenticated: false
+      authenticated: true
       custom: []
     headers:
+      Authorization: 'Bearer {token}'
       Content-Type: application/json
       Accept: application/json
     urlParameters:
@@ -313,7 +326,10 @@ endpoints:
         description: ''
         custom: []
     responseFields: []
-    auth: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer YOUR_TEST_TOKEN'
     controller: null
     method: null
     route: null
@@ -331,9 +347,10 @@ endpoints:
       subgroupDescription: ''
       title: 'Delete a category'
       description: ''
-      authenticated: false
+      authenticated: true
       custom: []
     headers:
+      Authorization: 'Bearer {token}'
       Content-Type: application/json
       Accept: application/json
     urlParameters:
@@ -374,7 +391,10 @@ endpoints:
         description: ''
         custom: []
     responseFields: []
-    auth: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer YOUR_TEST_TOKEN'
     controller: null
     method: null
     route: null

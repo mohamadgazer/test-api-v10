@@ -1,7 +1,7 @@
 name: 'Brand Management'
 description: |-
 
-  APIs for managing product brands
+  APIs for managing product brands (Admin only)
 endpoints:
   -
     httpMethods:
@@ -11,14 +11,15 @@ endpoints:
       groupName: 'Brand Management'
       groupDescription: |-
 
-        APIs for managing product brands
+        APIs for managing product brands (Admin only)
       subgroup: ''
       subgroupDescription: ''
-      title: 'Get all brands'
+      title: ''
       description: ''
-      authenticated: false
+      authenticated: true
       custom: []
     headers:
+      Authorization: 'Bearer {token}'
       Content-Type: application/json
       Accept: application/json
     urlParameters: []
@@ -30,22 +31,19 @@ endpoints:
     fileParameters: []
     responses:
       -
-        status: 200
-        content: |-
-          [
-            {
-              "id": 1,
-              "name": "Apple",
-              "logo": "https://example.com/apple.png",
-              "created_at": "2025-07-15T23:55:00.000000Z",
-              "updated_at": "2025-07-15T23:55:00.000000Z"
-            }
-          ]
-        headers: []
-        description: ''
+        status: 401
+        content: '{"message":"Unauthenticated."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
         custom: []
     responseFields: []
-    auth: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer YOUR_TEST_TOKEN'
     controller: null
     method: null
     route: null
@@ -58,73 +56,30 @@ endpoints:
       groupName: 'Brand Management'
       groupDescription: |-
 
-        APIs for managing product brands
+        APIs for managing product brands (Admin only)
       subgroup: ''
       subgroupDescription: ''
-      title: 'Create a new brand'
+      title: ''
       description: ''
-      authenticated: false
+      authenticated: true
       custom: []
     headers:
+      Authorization: 'Bearer {token}'
       Content-Type: application/json
       Accept: application/json
     urlParameters: []
     cleanUrlParameters: []
     queryParameters: []
     cleanQueryParameters: []
-    bodyParameters:
-      name:
-        name: name
-        description: 'Brand name.'
-        required: true
-        example: Samsung
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        custom: []
-      logo:
-        name: logo
-        description: 'The logo URL (optional).'
-        required: false
-        example: 'https://example.com/samsung.png'
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: true
-        custom: []
-    cleanBodyParameters:
-      name: Samsung
-      logo: 'https://example.com/samsung.png'
+    bodyParameters: []
+    cleanBodyParameters: []
     fileParameters: []
-    responses:
-      -
-        status: 201
-        content: |-
-          {
-            "id": 3,
-            "name": "Samsung",
-            "logo": "https://example.com/samsung.png",
-            "created_at": "2025-07-15T23:57:00.000000Z",
-            "updated_at": "2025-07-15T23:57:00.000000Z"
-          }
-        headers: []
-        description: ''
-        custom: []
-      -
-        status: 422
-        content: |-
-          {
-            "message": "Validation error",
-            "errors": {
-              "name": ["The name field is required."]
-            }
-          }
-        headers: []
-        description: ''
-        custom: []
+    responses: []
     responseFields: []
-    auth: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer YOUR_TEST_TOKEN'
     controller: null
     method: null
     route: null
@@ -137,14 +92,15 @@ endpoints:
       groupName: 'Brand Management'
       groupDescription: |-
 
-        APIs for managing product brands
+        APIs for managing product brands (Admin only)
       subgroup: ''
       subgroupDescription: ''
-      title: 'Get a specific brand'
+      title: ''
       description: ''
-      authenticated: false
+      authenticated: true
       custom: []
     headers:
+      Authorization: 'Bearer {token}'
       Content-Type: application/json
       Accept: application/json
     urlParameters:
@@ -152,14 +108,14 @@ endpoints:
         name: id
         description: 'The ID of the brand.'
         required: true
-        example: 1
-        type: integer
+        example: consequatur
+        type: string
         enumValues: []
-        exampleWasSpecified: true
+        exampleWasSpecified: false
         nullable: false
         custom: []
     cleanUrlParameters:
-      id: 1
+      id: consequatur
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -167,29 +123,19 @@ endpoints:
     fileParameters: []
     responses:
       -
-        status: 200
-        content: |-
-          {
-            "id": 1,
-            "name": "Apple",
-            "logo": "https://example.com/apple.png",
-            "created_at": "2025-07-15T23:58:00.000000Z",
-            "updated_at": "2025-07-15T23:58:00.000000Z"
-          }
-        headers: []
-        description: ''
-        custom: []
-      -
-        status: 404
-        content: |-
-          {
-            "message": "Brand not found"
-          }
-        headers: []
-        description: ''
+        status: 401
+        content: '{"message":"Unauthenticated."}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
         custom: []
     responseFields: []
-    auth: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer YOUR_TEST_TOKEN'
     controller: null
     method: null
     route: null
@@ -203,81 +149,41 @@ endpoints:
       groupName: 'Brand Management'
       groupDescription: |-
 
-        APIs for managing product brands
+        APIs for managing product brands (Admin only)
       subgroup: ''
       subgroupDescription: ''
-      title: 'Update an existing brand'
+      title: ''
       description: ''
-      authenticated: false
+      authenticated: true
       custom: []
     headers:
+      Authorization: 'Bearer {token}'
       Content-Type: application/json
       Accept: application/json
     urlParameters:
       id:
         name: id
-        description: 'Brand ID.'
+        description: 'The ID of the brand.'
         required: true
-        example: 2
-        type: integer
+        example: consequatur
+        type: string
         enumValues: []
-        exampleWasSpecified: true
+        exampleWasSpecified: false
         nullable: false
         custom: []
     cleanUrlParameters:
-      id: 2
+      id: consequatur
     queryParameters: []
     cleanQueryParameters: []
-    bodyParameters:
-      name:
-        name: name
-        description: 'Updated brand name.'
-        required: true
-        example: Lenovo
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: false
-        custom: []
-      logo:
-        name: logo
-        description: 'The new logo URL.'
-        required: false
-        example: 'https://example.com/lenovo.png'
-        type: string
-        enumValues: []
-        exampleWasSpecified: true
-        nullable: true
-        custom: []
-    cleanBodyParameters:
-      name: Lenovo
-      logo: 'https://example.com/lenovo.png'
+    bodyParameters: []
+    cleanBodyParameters: []
     fileParameters: []
-    responses:
-      -
-        status: 200
-        content: |-
-          {
-            "id": 2,
-            "name": "Lenovo",
-            "logo": "https://example.com/lenovo.png",
-            "created_at": "...",
-            "updated_at": "2025-07-15T23:59:00.000000Z"
-          }
-        headers: []
-        description: ''
-        custom: []
-      -
-        status: 404
-        content: |-
-          {
-            "message": "Brand not found"
-          }
-        headers: []
-        description: ''
-        custom: []
+    responses: []
     responseFields: []
-    auth: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer YOUR_TEST_TOKEN'
     controller: null
     method: null
     route: null
@@ -290,55 +196,41 @@ endpoints:
       groupName: 'Brand Management'
       groupDescription: |-
 
-        APIs for managing product brands
+        APIs for managing product brands (Admin only)
       subgroup: ''
       subgroupDescription: ''
-      title: 'Delete a brand'
+      title: ''
       description: ''
-      authenticated: false
+      authenticated: true
       custom: []
     headers:
+      Authorization: 'Bearer {token}'
       Content-Type: application/json
       Accept: application/json
     urlParameters:
       id:
         name: id
-        description: 'Brand ID to delete.'
+        description: 'The ID of the brand.'
         required: true
-        example: 2
-        type: integer
+        example: consequatur
+        type: string
         enumValues: []
-        exampleWasSpecified: true
+        exampleWasSpecified: false
         nullable: false
         custom: []
     cleanUrlParameters:
-      id: 2
+      id: consequatur
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
     cleanBodyParameters: []
     fileParameters: []
-    responses:
-      -
-        status: 200
-        content: |-
-          {
-            "message": "Deleted successfully"
-          }
-        headers: []
-        description: ''
-        custom: []
-      -
-        status: 404
-        content: |-
-          {
-            "message": "Brand not found"
-          }
-        headers: []
-        description: ''
-        custom: []
+    responses: []
     responseFields: []
-    auth: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer YOUR_TEST_TOKEN'
     controller: null
     method: null
     route: null
