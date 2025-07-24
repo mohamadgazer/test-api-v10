@@ -9,10 +9,33 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use Exception;
 
+/**
+ * @OA\Tag(
+ *     name="RAM Types",
+ *     description="Operations related to RAM types"
+ * )
+ */
 class RamTypeController extends Controller
 {
     /**
-     * Display a paginated list of RAM types.
+     * @OA\Get(
+     *     path="/api/ram-types",
+     *     summary="List RAM types",
+     *     description="Get a paginated list of all RAM types",
+     *     tags={"RAM Types"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Number of items per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=10)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List retrieved successfully"
+     *     )
+     * )
      */
     public function index(Request $request)
     {
@@ -31,7 +54,22 @@ class RamTypeController extends Controller
     }
 
     /**
-     * Store a newly created RAM type.
+     * @OA\Post(
+     *     path="/api/ram-types",
+     *     summary="Create RAM type",
+     *     description="Create a new RAM type",
+     *     tags={"RAM Types"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name"},
+     *             @OA\Property(property="name", type="string", example="DDR5")
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Created successfully"),
+     *     @OA\Response(response=422, description="Validation error")
+     * )
      */
     public function store(Request $request)
     {
@@ -55,7 +93,21 @@ class RamTypeController extends Controller
     }
 
     /**
-     * Display the specified RAM type.
+     * @OA\Get(
+     *     path="/api/ram-types/{id}",
+     *     summary="Get RAM type",
+     *     description="Retrieve a RAM type by ID",
+     *     tags={"RAM Types"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Retrieved successfully"),
+     *     @OA\Response(response=404, description="Not found")
+     * )
      */
     public function show($id)
     {
@@ -75,7 +127,29 @@ class RamTypeController extends Controller
     }
 
     /**
-     * Update the specified RAM type.
+     * @OA\Put(
+     *     path="/api/ram-types/{id}",
+     *     summary="Update RAM type",
+     *     description="Update a RAM type by ID",
+     *     tags={"RAM Types"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name"},
+     *             @OA\Property(property="name", type="string", example="DDR4")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Updated successfully"),
+     *     @OA\Response(response=422, description="Validation error"),
+     *     @OA\Response(response=404, description="Not found")
+     * )
      */
     public function update(Request $request, $id)
     {
@@ -103,7 +177,21 @@ class RamTypeController extends Controller
     }
 
     /**
-     * Remove the specified RAM type from storage.
+     * @OA\Delete(
+     *     path="/api/ram-types/{id}",
+     *     summary="Delete RAM type",
+     *     description="Delete a RAM type by ID",
+     *     tags={"RAM Types"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response=200, description="Deleted successfully"),
+     *     @OA\Response(response=404, description="Not found")
+     * )
      */
     public function destroy($id)
     {
@@ -122,7 +210,7 @@ class RamTypeController extends Controller
         }
     }
 
-    // ========== ✅ مساعدات داخلية لتهذيب الكود ==========
+    // ========== ✅ Helpers ==========
 
     private function validationError(ValidationException $e)
     {

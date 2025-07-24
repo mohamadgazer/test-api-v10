@@ -2111,11 +2111,11 @@
                 "tags": [
                     "Checkout"
                 ],
-                "summary": "إتمام عملية الدفع",
-                "description": "تحويل محتويات عربة التسوق إلى طلب نهائي للمستخدم المصادق",
+                "summary": "Checkout",
+                "description": "Convert the authenticated user's cart into a finalized order",
                 "operationId": "cf3dadcde3206331ee7bb6dfb80d50c4",
                 "requestBody": {
-                    "description": "بيانات عنوان الشحن",
+                    "description": "Shipping address data",
                     "required": true,
                     "content": {
                         "application/json": {
@@ -2127,7 +2127,7 @@
                                     "address": {
                                         "type": "string",
                                         "maxLength": 255,
-                                        "example": "123 شارع الرئيسي, القاهرة"
+                                        "example": "123 Main Street, Cairo"
                                     }
                                 },
                                 "type": "object"
@@ -2137,7 +2137,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "تمت عملية الدفع بنجاح",
+                        "description": "Checkout completed successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2148,7 +2148,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "تمت عملية الدفع"
+                                            "example": "Checkout completed"
                                         },
                                         "order_id": {
                                             "type": "integer",
@@ -2170,7 +2170,7 @@
                         }
                     },
                     "400": {
-                        "description": "عربة التسوق فارغة",
+                        "description": "Cart is empty",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2181,7 +2181,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "عربة التسوق فارغة"
+                                            "example": "Cart is empty"
                                         }
                                     },
                                     "type": "object"
@@ -2190,7 +2190,7 @@
                         }
                     },
                     "401": {
-                        "description": "غير مصرح - يجب تقديم توكن صحيح",
+                        "description": "Unauthorized - a valid token is required",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2206,7 +2206,7 @@
                         }
                     },
                     "422": {
-                        "description": "بيانات غير صالحة",
+                        "description": "Invalid input data",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2219,7 +2219,7 @@
                                             "type": "object",
                                             "example": {
                                                 "address": [
-                                                    "حقل العنوان مطلوب."
+                                                    "The address field is required."
                                                 ]
                                             }
                                         }
@@ -2230,7 +2230,7 @@
                         }
                     },
                     "500": {
-                        "description": "خطأ في الخادم أو عدم كفاية المخزون",
+                        "description": "Server error or insufficient stock",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2241,7 +2241,7 @@
                                         },
                                         "error": {
                                             "type": "string",
-                                            "example": "المنتج Laptop X لا يحتوي على مخزون كافي."
+                                            "example": "Product Laptop X does not have enough stock."
                                         }
                                     },
                                     "type": "object"
@@ -6527,7 +6527,8 @@
                 "tags": [
                     "RAM"
                 ],
-                "summary": "Get paginated list of RAMs",
+                "summary": "List all RAM configurations",
+                "description": "Display a paginated list of RAMs",
                 "operationId": "57c3d15a0862fd271b58016d934a961a",
                 "parameters": [
                     {
@@ -6538,7 +6539,8 @@
                         "schema": {
                             "type": "integer",
                             "default": 10
-                        }
+                        },
+                        "example": 15
                     }
                 ],
                 "responses": {
@@ -6560,21 +6562,108 @@
                                 }
                             }
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Forbidden"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Internal server error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
                     "RAM"
                 ],
-                "summary": "Create a new RAM entry",
+                "summary": "Create new RAM",
+                "description": "Create new RAM configuration",
                 "operationId": "1951005f054688f6aa028079bf033f02",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/RamCreate"
+                                "required": [
+                                    "size_gb",
+                                    "price",
+                                    "ram_type_id"
+                                ],
+                                "properties": {
+                                    "size_gb": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 16
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 99.99
+                                    },
+                                    "ram_type_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
                     }
@@ -6603,8 +6692,8 @@
                             }
                         }
                     },
-                    "422": {
-                        "description": "Validation error or duplicate entry",
+                    "401": {
+                        "description": "Unauthorized",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -6613,8 +6702,80 @@
                                             "type": "boolean",
                                             "example": false
                                         },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Forbidden"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation failed"
+                                        },
                                         "errors": {
-                                            "type": "object"
+                                            "type": "object",
+                                            "example": {
+                                                "size_gb": [
+                                                    "The size gb field is required"
+                                                ],
+                                                "ram_type_id": [
+                                                    "The selected ram type id is invalid"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict - Duplicate entry",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "A RAM with this size and type already exists"
                                         }
                                     },
                                     "type": "object"
@@ -6622,7 +6783,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/rams/{id}": {
@@ -6630,17 +6796,19 @@
                 "tags": [
                     "RAM"
                 ],
-                "summary": "Get a specific RAM by ID",
+                "summary": "Get RAM details",
+                "description": "Display specific RAM configuration",
                 "operationId": "1547984d6b58479faed5e2b55d7b2ecd",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID of RAM to return",
+                        "description": "RAM ID",
                         "required": true,
                         "schema": {
                             "type": "integer"
-                        }
+                        },
+                        "example": 1
                     }
                 ],
                 "responses": {
@@ -6663,8 +6831,48 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Forbidden"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
                     "404": {
-                        "description": "RAM not found",
+                        "description": "Not found",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -6683,23 +6891,30 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
                     "RAM"
                 ],
-                "summary": "Update an existing RAM entry",
+                "summary": "Update RAM details",
+                "description": "Update RAM configuration",
                 "operationId": "75619a9425ddae966766c995ed93d613",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID of RAM to update",
+                        "description": "RAM ID",
                         "required": true,
                         "schema": {
                             "type": "integer"
-                        }
+                        },
+                        "example": 1
                     }
                 ],
                 "requestBody": {
@@ -6707,7 +6922,28 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/RamCreate"
+                                "required": [
+                                    "size_gb",
+                                    "price",
+                                    "ram_type_id"
+                                ],
+                                "properties": {
+                                    "size_gb": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 32
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 199.99
+                                    },
+                                    "ram_type_id": {
+                                        "type": "integer",
+                                        "example": 2
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
                     }
@@ -6736,8 +6972,48 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Forbidden"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
                     "404": {
-                        "description": "RAM not found",
+                        "description": "Not found",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -6757,7 +7033,7 @@
                         }
                     },
                     "422": {
-                        "description": "Validation error or duplicate entry",
+                        "description": "Validation error",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -6766,8 +7042,40 @@
                                             "type": "boolean",
                                             "example": false
                                         },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation failed"
+                                        },
                                         "errors": {
-                                            "type": "object"
+                                            "type": "object",
+                                            "example": {
+                                                "size_gb": [
+                                                    "The size gb field is required"
+                                                ],
+                                                "ram_type_id": [
+                                                    "The selected ram type id is invalid"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict - Duplicate entry",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "A RAM with this size and type already exists"
                                         }
                                     },
                                     "type": "object"
@@ -6775,23 +7083,30 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
                     "RAM"
                 ],
-                "summary": "Delete a RAM entry",
+                "summary": "Delete RAM",
+                "description": "Delete RAM configuration",
                 "operationId": "eac740a1d539241bf9209be3402b7ab6",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
-                        "description": "ID of RAM to delete",
+                        "description": "RAM ID",
                         "required": true,
                         "schema": {
                             "type": "integer"
-                        }
+                        },
+                        "example": 1
                     }
                 ],
                 "responses": {
@@ -6815,8 +7130,48 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Forbidden"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
                     "404": {
-                        "description": "RAM not found",
+                        "description": "Not found",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -6835,7 +7190,201 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/ram-types": {
+            "get": {
+                "tags": [
+                    "RAM Types"
+                ],
+                "summary": "List RAM types",
+                "description": "Get a paginated list of all RAM types",
+                "operationId": "28106a2ef2fd5dc5fc9c046c26556c2a",
+                "parameters": [
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List retrieved successfully"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "RAM Types"
+                ],
+                "summary": "Create RAM type",
+                "description": "Create a new RAM type",
+                "operationId": "5807b8564f51960cc37669ff7e5959b7",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "DDR5"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/ram-types/{id}": {
+            "get": {
+                "tags": [
+                    "RAM Types"
+                ],
+                "summary": "Get RAM type",
+                "description": "Retrieve a RAM type by ID",
+                "operationId": "fe4ab2f3524790ba497a5e5b2ac56878",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retrieved successfully"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "RAM Types"
+                ],
+                "summary": "Update RAM type",
+                "description": "Update a RAM type by ID",
+                "operationId": "a609569e6ae31b3d2fc169335519583f",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "DDR4"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Updated successfully"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "RAM Types"
+                ],
+                "summary": "Delete RAM type",
+                "description": "Delete a RAM type by ID",
+                "operationId": "a228d374ee7fe04a1b67266781ba8ac0",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted successfully"
+                    },
+                    "404": {
+                        "description": "Not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/users": {
@@ -7711,7 +8260,7 @@
         },
         {
             "name": "Checkout",
-            "description": "عمليات الدفع وإنشاء الطلبات"
+            "description": "Checkout operations and order creation"
         },
         {
             "name": "CPUs",
@@ -7742,16 +8291,20 @@
             "description": "Operations related to product models management"
         },
         {
+            "name": "RAM",
+            "description": "Operations related to RAM management"
+        },
+        {
+            "name": "RAM Types",
+            "description": "Operations related to RAM types"
+        },
+        {
             "name": "Categories",
             "description": "Categories"
         },
         {
             "name": "Order Items",
             "description": "Order Items"
-        },
-        {
-            "name": "RAM",
-            "description": "RAM"
         },
         {
             "name": "Users",
