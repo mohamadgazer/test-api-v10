@@ -14,48 +14,81 @@ use Illuminate\Validation\ValidationException;
 use Exception;
 
 /**
- * @group Checkout
- *
- * Handles the checkout process for authenticated users.
+ * @OA\Tag(
+ *     name="Checkout",
+ *     description="عمليات الدفع وإنشاء الطلبات"
+ * )
  */
 class CheckoutController extends Controller
 {
     /**
-     * Perform checkout and create a new order.
+     * إتمام عملية الدفع وإنشاء طلب جديد
      *
-     * Converts the authenticated user's cart into a finalized order.
-     *
-     * @authenticated
-     *
-     * @bodyParam address string required The shipping address. Example: 123 Main St, Cairo
-     *
-     * @response 201 {
-     *   "status": true,
-     *   "message": "Checkout completed",
-     *   "order_id": 5,
-     *   "total": 2599.50,
-     *   "items_count": 2
-     * }
-     *
-     * @response 400 {
-     *   "status": false,
-     *   "message": "Cart is empty"
-     * }
-     *
-     * @response 422 {
-     *   "message": "The given data was invalid.",
-     *   "errors": {
-     *     "address": ["The address field is required."]
-     *   }
-     * }
-     *
-     * @response 500 {
-     *   "status": false,
-     *   "error": "Product Laptop X does not have enough stock."
-     * }
-     *
-     * @param Request $request
-     * @return JsonResponse
+     * @OA\Post(
+     *     path="/api/checkout",
+     *     summary="إتمام عملية الدفع",
+     *     description="تحويل محتويات عربة التسوق إلى طلب نهائي للمستخدم المصادق",
+     *     tags={"Checkout"},
+     *     security={{"bearerAuth":{}}},
+     *     
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="بيانات عنوان الشحن",
+     *         @OA\JsonContent(
+     *             required={"address"},
+     *             @OA\Property(property="address", type="string", example="123 شارع الرئيسي, القاهرة", maxLength=255)
+     *         )
+     *     ),
+     *     
+     *     @OA\Response(
+     *         response=201,
+     *         description="تمت عملية الدفع بنجاح",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="تمت عملية الدفع"),
+     *             @OA\Property(property="order_id", type="integer", example=5),
+     *             @OA\Property(property="total", type="number", format="float", example=2599.50),
+     *             @OA\Property(property="items_count", type="integer", example=2)
+     *         )
+     *     ),
+     *     
+     *     @OA\Response(
+     *         response=400,
+     *         description="عربة التسوق فارغة",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="عربة التسوق فارغة")
+     *         )
+     *     ),
+     *     
+     *     @OA\Response(
+     *         response=401,
+     *         description="غير مصرح - يجب تقديم توكن صحيح",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
+     *     ),
+     *     
+     *     @OA\Response(
+     *         response=422,
+     *         description="بيانات غير صالحة",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="The given data was invalid."),
+     *             @OA\Property(property="errors", type="object", example={
+     *                 "address": {"حقل العنوان مطلوب."}
+     *             })
+     *         )
+     *     ),
+     *     
+     *     @OA\Response(
+     *         response=500,
+     *         description="خطأ في الخادم أو عدم كفاية المخزون",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=false),
+     *             @OA\Property(property="error", type="string", example="المنتج Laptop X لا يحتوي على مخزون كافي.")
+     *         )
+     *     )
+     * )
      */
     public function store(Request $request): JsonResponse
     {
