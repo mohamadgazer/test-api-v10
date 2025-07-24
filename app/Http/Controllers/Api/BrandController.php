@@ -10,33 +10,54 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * @group Brand Management
- * 
- * APIs for managing product brands (Admin only)
- * 
- * @authenticated
+ * @OA\Tag(
+ *     name="Brands",
+ *     description="API Endpoints for Product Brand Management (Admin Only)"
+ * )
  */
 class BrandController extends Controller
 {
     /**
      * @OA\Get(
-     *     path="/brands",
-     *     summary="Get all brands",
+     *     path="/api/brands",
+     *     operationId="getBrandsList",
      *     tags={"Brands"},
-     *     security={{"sanctum":{}}},
+     *     summary="Get all brands",
+     *     description="Returns list of all brands",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
      *         @OA\JsonContent(
-     *             type="array",
-     *             @OA\Items(ref="#/components/schemas/Brand")
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/Brand")
+     *             )
      *         )
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="Unauthenticated",
+     *         description="Unauthorized",
      *         @OA\JsonContent(
      *             @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Forbidden",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Forbidden")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Failed to retrieve brands"),
+     *             @OA\Property(property="error", type="string")
      *         )
      *     )
      * )
@@ -60,10 +81,12 @@ class BrandController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/brands",
-     *     summary="Create a new brand",
+     *     path="/api/brands",
+     *     operationId="createBrand",
      *     tags={"Brands"},
-     *     security={{"sanctum":{}}},
+     *     summary="Create new brand",
+     *     description="Admin-only endpoint to create new brand",
+     *     security={{"bearerAuth": {}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -75,11 +98,15 @@ class BrandController extends Controller
      *     @OA\Response(
      *         response=201,
      *         description="Brand created successfully",
-     *         @OA\JsonContent(ref="#/components/schemas/Brand")
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", ref="#/components/schemas/Brand"),
+     *             @OA\Property(property="message", type="string", example="Brand created successfully")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="Unauthenticated",
+     *         description="Unauthorized",
      *         @OA\JsonContent(
      *             @OA\Property(property="message", type="string", example="Unauthenticated")
      *         )
@@ -93,10 +120,20 @@ class BrandController extends Controller
      *     ),
      *     @OA\Response(
      *         response=422,
-     *         description="Validation error",
+     *         description="Validation Error",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Validation failed"),
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Validation error"),
      *             @OA\Property(property="errors", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Failed to create brand"),
+     *             @OA\Property(property="error", type="string")
      *         )
      *     )
      * )
@@ -136,10 +173,12 @@ class BrandController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/brands/{id}",
-     *     summary="Get a specific brand",
+     *     path="/api/brands/{id}",
+     *     operationId="getBrandById",
      *     tags={"Brands"},
-     *     security={{"sanctum":{}}},
+     *     summary="Get brand details",
+     *     description="Returns brand data by ID",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -150,11 +189,14 @@ class BrandController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Successful operation",
-     *         @OA\JsonContent(ref="#/components/schemas/Brand")
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", ref="#/components/schemas/Brand")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="Unauthenticated",
+     *         description="Unauthorized",
      *         @OA\JsonContent(
      *             @OA\Property(property="message", type="string", example="Unauthenticated")
      *         )
@@ -163,7 +205,17 @@ class BrandController extends Controller
      *         response=404,
      *         description="Brand not found",
      *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
      *             @OA\Property(property="message", type="string", example="Brand not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Failed to retrieve brand"),
+     *             @OA\Property(property="error", type="string")
      *         )
      *     )
      * )
@@ -192,10 +244,12 @@ class BrandController extends Controller
 
     /**
      * @OA\Put(
-     *     path="/brands/{id}",
-     *     summary="Update an existing brand",
+     *     path="/api/brands/{id}",
+     *     operationId="updateBrand",
      *     tags={"Brands"},
-     *     security={{"sanctum":{}}},
+     *     summary="Update existing brand",
+     *     description="Admin-only endpoint to update brand",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -214,11 +268,15 @@ class BrandController extends Controller
      *     @OA\Response(
      *         response=200,
      *         description="Brand updated successfully",
-     *         @OA\JsonContent(ref="#/components/schemas/Brand")
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", ref="#/components/schemas/Brand"),
+     *             @OA\Property(property="message", type="string", example="Brand updated successfully")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="Unauthenticated",
+     *         description="Unauthorized",
      *         @OA\JsonContent(
      *             @OA\Property(property="message", type="string", example="Unauthenticated")
      *         )
@@ -234,15 +292,26 @@ class BrandController extends Controller
      *         response=404,
      *         description="Brand not found",
      *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
      *             @OA\Property(property="message", type="string", example="Brand not found")
      *         )
      *     ),
      *     @OA\Response(
      *         response=422,
-     *         description="Validation error",
+     *         description="Validation Error",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Validation failed"),
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Validation error"),
      *             @OA\Property(property="errors", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Failed to update brand"),
+     *             @OA\Property(property="error", type="string")
      *         )
      *     )
      * )
@@ -289,10 +358,12 @@ class BrandController extends Controller
 
     /**
      * @OA\Delete(
-     *     path="/brands/{id}",
-     *     summary="Delete a brand",
+     *     path="/api/brands/{id}",
+     *     operationId="deleteBrand",
      *     tags={"Brands"},
-     *     security={{"sanctum":{}}},
+     *     summary="Delete a brand",
+     *     description="Admin-only endpoint to delete brand",
+     *     security={{"bearerAuth": {}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -304,12 +375,13 @@ class BrandController extends Controller
      *         response=200,
      *         description="Brand deleted successfully",
      *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="message", type="string", example="Brand deleted successfully")
      *         )
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="Unauthenticated",
+     *         description="Unauthorized",
      *         @OA\JsonContent(
      *             @OA\Property(property="message", type="string", example="Unauthenticated")
      *         )
@@ -325,7 +397,17 @@ class BrandController extends Controller
      *         response=404,
      *         description="Brand not found",
      *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
      *             @OA\Property(property="message", type="string", example="Brand not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server Error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Failed to delete brand"),
+     *             @OA\Property(property="error", type="string")
      *         )
      *     )
      * )
