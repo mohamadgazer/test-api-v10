@@ -10,51 +10,55 @@ use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * @group Laptop Details
- *
- * APIs for managing laptop details such as model, brand, CPU, GPU, RAM, storage, and pricing.
+ * @OA\Tag(
+ *     name="Laptop Details",
+ *     description="APIs for managing laptop specifications including hardware components and pricing"
+ * )
  */
 class LaptopDetailController extends Controller
 {
     /**
-     * List all laptop details (paginated).
+     * List all laptop details (paginated)
      *
-     * Retrieve a paginated list of laptop details with related models.
-     *
-     * @queryParam per_page int Number of results per page. Defaults to 10. Example: 15
-     *
-     * @response 200 {
-     *   "status": true,
-     *   "data": {
-     *     "current_page": 1,
-     *     "data": [
-     *       {
-     *         "id": 1,
-     *         "product_model_id": 2,
-     *         "brand_id": 3,
-     *         "cpu_id": 2,
-     *         "gpu_id": 2,
-     *         "dedicated_gpu_id": 2,
-     *         "base_price": 15000,
-     *         "default_ram_id": 1,
-     *         "default_storage_id": 1,
-     *         "ram_type_id": 2,
-     *         "created_at": "...",
-     *         "updated_at": "...",
-     *         "productModel": { ... },
-     *         "cpu": { ... },
-     *         "gpu": { ... },
-     *         "dedicatedGpu": { ... },
-     *         "defaultRam": { ... },
-     *         "defaultStorage": { ... },
-     *         "rams": [ ... ],
-     *         "storages": [ ... ],
-     *         "storageTypes": [ ... ]
-     *       }
-     *     ],
-     *     ...
-     *   }
-     * }
+     * @OA\Get(
+     *     path="/api/laptop-details",
+     *     summary="List all laptop specifications",
+     *     tags={"Laptop Details"},
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Items per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=10),
+     *         example=15
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="data",
+     *                     type="array",
+     *                     @OA\Items(ref="#/components/schemas/LaptopDetail")
+     *                 ),
+     *                 @OA\Property(property="current_page", type="integer", example=1)
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Unexpected error occurred"),
+     *             @OA\Property(property="error", type="string")
+     *         )
+     *     )
+     * )
      */
     public function index()
     {
@@ -81,39 +85,67 @@ class LaptopDetailController extends Controller
     }
 
     /**
-     * Create a new laptop detail.
+     * Create new laptop specification
      *
-     * @bodyParam product_model_id int required The product model ID. Must exist in product_models table. Example: 2
-     * @bodyParam brand_id int required The brand ID. Must exist in brands table. Example: 3
-     * @bodyParam cpu_id int required The CPU ID. Must exist in cpus table. Example: 2
-     * @bodyParam gpu_id int nullable The integrated GPU ID. Must exist in gpus table. Example: 2
-     * @bodyParam dedicated_gpu_id int nullable The dedicated GPU ID. Must exist in dedicated_gpus table. Example: 2
-     * @bodyParam base_price numeric required Base price without RAM/storage. Example: 15000
-     * @bodyParam default_ram_id int nullable Default RAM ID. Must exist in rams table.
-     * @bodyParam default_storage_id int nullable Default storage ID. Must exist in storages table.
-     * @bodyParam ram_type_id int nullable RAM type ID. Must exist in ram_types table.
-     * @bodyParam storage_type_ids array<int> Nullable array of storage type IDs. Each must exist in storage_types table.
-     *
-     * @response 201 {
-     *   "status": true,
-     *   "message": "Laptop detail created successfully.",
-     *   "data": { ... }
-     * }
-     *
-     * @response 422 {
-     *   "status": false,
-     *   "message": "Validation failed.",
-     *   "errors": {
-     *     "product_model_id": ["The product model id field is required."],
-     *     ...
-     *   }
-     * }
-     *
-     * @response 500 {
-     *   "status": false,
-     *   "message": "Unexpected error occurred.",
-     *   "error": "..."
-     * }
+     * @OA\Post(
+     *     path="/api/laptop-details",
+     *     summary="Create new laptop configuration",
+     *     tags={"Laptop Details"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"product_model_id","brand_id","cpu_id","base_price"},
+     *             @OA\Property(property="product_model_id", type="integer", example=2),
+     *             @OA\Property(property="brand_id", type="integer", example=3),
+     *             @OA\Property(property="cpu_id", type="integer", example=2),
+     *             @OA\Property(property="gpu_id", type="integer", nullable=true, example=2),
+     *             @OA\Property(property="dedicated_gpu_id", type="integer", nullable=true, example=2),
+     *             @OA\Property(property="base_price", type="number", format="float", example=15000),
+     *             @OA\Property(property="default_ram_id", type="integer", nullable=true),
+     *             @OA\Property(property="default_storage_id", type="integer", nullable=true),
+     *             @OA\Property(property="ram_type_id", type="integer", nullable=true),
+     *             @OA\Property(
+     *                 property="storage_type_ids",
+     *                 type="array",
+     *                 @OA\Items(type="integer"),
+     *                 example={1,2}
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Laptop detail created successfully"),
+     *             @OA\Property(property="data", ref="#/components/schemas/LaptopDetail")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Validation failed"),
+     *             @OA\Property(
+     *                 property="errors",
+     *                 type="object",
+     *                 example={
+     *                     "product_model_id": {"The product model id field is required"}
+     *                 }
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Unexpected error occurred"),
+     *             @OA\Property(property="error", type="string")
+     *         )
+     *     )
+     * )
      */
     public function store(Request $request)
     {
@@ -182,20 +214,39 @@ class LaptopDetailController extends Controller
         }
     }
 
+  
     /**
-     * Show a specific laptop detail by ID.
+     * Get specific laptop detail
      *
-     * @urlParam id int required The ID of the laptop detail. Example: 1
-     *
-     * @response 200 {
-     *   "status": true,
-     *   "data": { ... }
-     * }
-     *
-     * @response 404 {
-     *   "status": false,
-     *   "message": "LaptopDetail not found."
-     * }
+     * @OA\Get(
+     *     path="/api/laptop-details/{id}",
+     *     summary="Get laptop specification by ID",
+     *     tags={"Laptop Details"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Laptop detail ID",
+     *         required=true,
+     *         @OA\Schema(type="integer"),
+     *         example=1
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="data", ref="#/components/schemas/LaptopDetail")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="LaptopDetail not found")
+     *         )
+     *     )
+     * )
      */
     public function show($id)
     {
@@ -225,62 +276,80 @@ class LaptopDetailController extends Controller
 
 
 
-
-/**
- * Update an existing laptop detail (partial or full update)
- *
- * Allows updating one or more fields of a laptop detail.
- * Fields not provided will remain unchanged.
- *
- * @urlParam id integer required The ID of the laptop detail to update. Example: 1
- *
- * @bodyParam product_model_id integer The ID of the product model. Example: 2
- * @bodyParam brand_id integer The ID of the brand. Example: 3
- * @bodyParam cpu_id integer The ID of the CPU. Example: 2
- * @bodyParam gpu_id integer Nullable. The ID of the integrated GPU. Example: 2
- * @bodyParam dedicated_gpu_id integer Nullable. The ID of the dedicated GPU. Example: 2
- * @bodyParam base_price numeric The base price of the laptop detail. Example: 15000
- * @bodyParam default_ram_id integer Nullable. The default RAM ID. Example: 5
- * @bodyParam default_storage_id integer Nullable. The default Storage ID. Example: 3
- * @bodyParam ram_ids array Nullable. List of RAM IDs associated. Example: [5,6,7]
- * @bodyParam storage_ids array Nullable. List of Storage IDs associated. Example: [2,3]
- * @bodyParam storage_type_ids array Nullable. List of Storage Type IDs associated. Example: [1,2]
- *
- * @response 200 {
- *   "status": true,
- *   "message": "Laptop detail updated successfully.",
- *   "data": {
- *     "id": 1,
- *     "product_model_id": 2,
- *     "brand_id": 3,
- *     "cpu_id": 2,
- *     "gpu_id": 2,
- *     "dedicated_gpu_id": 2,
- *     "base_price": 15000,
- *     "default_ram_id": 5,
- *     "default_storage_id": 3,
- *     "rams": [...],
- *     "storages": [...],
- *     "storageTypes": [...],
- *     ...
- *   }
- * }
- *
- * @response 404 {
- *   "status": false,
- *   "message": "LaptopDetail not found."
- * }
- *
- * @response 422 {
- *   "status": false,
- *   "message": "Validation failed.",
- *   "errors": {
- *     "cpu_id": ["The cpu id field is required."],
- *     ...
- *   }
- * }
- */
-
+ /**
+     * Update laptop specification
+     *
+     * @OA\Put(
+     *     path="/api/laptop-details/{id}",
+     *     summary="Update laptop configuration",
+     *     tags={"Laptop Details"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Laptop detail ID",
+     *         required=true,
+     *         @OA\Schema(type="integer"),
+     *         example=1
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="product_model_id", type="integer", example=2),
+     *             @OA\Property(property="brand_id", type="integer", example=3),
+     *             @OA\Property(property="cpu_id", type="integer", example=2),
+     *             @OA\Property(property="gpu_id", type="integer", nullable=true, example=2),
+     *             @OA\Property(property="dedicated_gpu_id", type="integer", nullable=true, example=2),
+     *             @OA\Property(property="base_price", type="number", format="float", example=15000),
+     *             @OA\Property(property="default_ram_id", type="integer", nullable=true, example=5),
+     *             @OA\Property(property="default_storage_id", type="integer", nullable=true, example=3),
+     *             @OA\Property(
+     *                 property="ram_ids",
+     *                 type="array",
+     *                 @OA\Items(type="integer"),
+     *                 example={5,6,7}
+     *             ),
+     *             @OA\Property(
+     *                 property="storage_ids",
+     *                 type="array",
+     *                 @OA\Items(type="integer"),
+     *                 example={2,3}
+     *             ),
+     *             @OA\Property(
+     *                 property="storage_type_ids",
+     *                 type="array",
+     *                 @OA\Items(type="integer"),
+     *                 example={1,2}
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Laptop detail updated successfully"),
+     *             @OA\Property(property="data", ref="#/components/schemas/LaptopDetail")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="LaptopDetail not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Validation failed"),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     )
+     * )
+     */
 
 
 public function update(Request $request, $id)
@@ -350,20 +419,38 @@ public function update(Request $request, $id)
 }
 
 
-    /**
-     * Delete a laptop detail by ID.
+   /**
+     * Delete laptop specification
      *
-     * @urlParam id int required The ID of the laptop detail. Example: 1
-     *
-     * @response 200 {
-     *   "status": true,
-     *   "message": "Laptop detail deleted successfully."
-     * }
-     *
-     * @response 404 {
-     *   "status": false,
-     *   "message": "LaptopDetail not found."
-     * }
+     * @OA\Delete(
+     *     path="/api/laptop-details/{id}",
+     *     summary="Remove laptop configuration",
+     *     tags={"Laptop Details"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="Laptop detail ID",
+     *         required=true,
+     *         @OA\Schema(type="integer"),
+     *         example=1
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Laptop detail deleted successfully")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="status", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="LaptopDetail not found")
+     *         )
+     *     )
+     * )
      */
     public function destroy($id)
     {
@@ -426,3 +513,64 @@ public function update(Request $request, $id)
         ], Response::HTTP_NOT_FOUND);
     }
 }
+
+/**
+ * @OA\Schema(
+ *     schema="LaptopDetail",
+ *     type="object",
+ *     @OA\Property(property="id", type="integer", example=1),
+ *     @OA\Property(property="product_model_id", type="integer", example=2),
+ *     @OA\Property(property="brand_id", type="integer", example=3),
+ *     @OA\Property(property="cpu_id", type="integer", example=2),
+ *     @OA\Property(property="gpu_id", type="integer", nullable=true, example=2),
+ *     @OA\Property(property="dedicated_gpu_id", type="integer", nullable=true, example=2),
+ *     @OA\Property(property="base_price", type="number", format="float", example=15000),
+ *     @OA\Property(property="default_ram_id", type="integer", nullable=true, example=1),
+ *     @OA\Property(property="default_storage_id", type="integer", nullable=true, example=1),
+ *     @OA\Property(property="ram_type_id", type="integer", nullable=true, example=2),
+ *     @OA\Property(property="created_at", type="string", format="date-time"),
+ *     @OA\Property(property="updated_at", type="string", format="date-time"),
+ *     @OA\Property(
+ *         property="productModel",
+ *         type="object",
+ *         @OA\Property(property="id", type="integer"),
+ *         @OA\Property(property="name", type="string")
+ *     ),
+ *     @OA\Property(
+ *         property="cpu",
+ *         type="object",
+ *         @OA\Property(property="id", type="integer"),
+ *         @OA\Property(property="name", type="string")
+ *     ),
+ *     @OA\Property(
+ *         property="rams",
+ *         type="array",
+ *         @OA\Items(ref="#/components/schemas/Ram")
+ *     ),
+ *     @OA\Property(
+ *         property="storages",
+ *         type="array",
+ *         @OA\Items(ref="#/components/schemas/Storage")
+ *     )
+ * )
+ */
+
+/**
+ * @OA\Schema(
+ *     schema="Ram",
+ *     type="object",
+ *     @OA\Property(property="id", type="integer"),
+ *     @OA\Property(property="size", type="integer"),
+ *     @OA\Property(property="price", type="number")
+ * )
+ */
+
+/**
+ * @OA\Schema(
+ *     schema="Storage",
+ *     type="object",
+ *     @OA\Property(property="id", type="integer"),
+ *     @OA\Property(property="size", type="integer"),
+ *     @OA\Property(property="price", type="number")
+ * )
+ */
