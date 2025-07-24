@@ -23,7 +23,7 @@ class OrderItemController extends Controller
      *     path="/order-items",
      *     summary="Get paginated list of order items",
      *     tags={"Order Items"},
-     *     security={{"sanctum":{}}},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="per_page",
      *         in="query",
@@ -85,7 +85,7 @@ class OrderItemController extends Controller
      *     path="/order-items",
      *     summary="Create a new order item (Admin only)",
      *     tags={"Order Items"},
-     *     security={{"sanctum":{}}},
+     *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -179,7 +179,7 @@ class OrderItemController extends Controller
      *     path="/order-items/{id}",
      *     summary="Get specific order item by ID",
      *     tags={"Order Items"},
-     *     security={{"sanctum":{}}},
+    *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -259,7 +259,7 @@ class OrderItemController extends Controller
      *     path="/order-items/{id}",
      *     summary="Update an order item (Admin only)",
      *     tags={"Order Items"},
-     *     security={{"sanctum":{}}},
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
@@ -374,7 +374,7 @@ class OrderItemController extends Controller
      *     path="/order-items/{id}",
      *     summary="Delete an order item (Admin only)",
      *     tags={"Order Items"},
-     *     security={{"sanctum":{}}},
+    *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="id",
      *         in="path",
