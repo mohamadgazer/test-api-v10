@@ -9,14 +9,62 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @OA\Tag(
+ *     name="Dedicated GPUs",
+ *     description="Operations related to dedicated graphics processing units"
+ * )
+ */
 class DedicatedGpuController extends Controller
 {
     /**
-     * Display a paginated list of dedicated GPUs.
+     * Display a paginated list of dedicated GPUs
      *
-     * @queryParam per_page int Number of items per page (default: 10). Example: 15
-     * @return \Illuminate\Http\JsonResponse
+     * @OA\Get(
+     *     path="/api/dedicated-gpus",
+     *     summary="List all dedicated GPUs",
+     *     tags={"Dedicated GPUs"},
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Number of items per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=10),
+     *         example=15
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Successful operation",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/DedicatedGpu")
+     *             ),
+     *             @OA\Property(
+     *                 property="links",
+     *                 type="object",
+     *                 description="Pagination links"
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 description="Pagination metadata"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Failed to retrieve GPUs."),
+     *             @OA\Property(property="error", type="string")
+     *         )
+     *     )
+     * )
      */
+
     public function index()
     {
         try {
@@ -30,11 +78,53 @@ class DedicatedGpuController extends Controller
         }
     }
 
-    /**
-     * Store a newly created dedicated GPU in storage.
+/**
+     * Store a newly created dedicated GPU
      *
-     * @bodyParam name string required The name of the GPU. Example: RTX 4090
-     * @return \Illuminate\Http\JsonResponse
+     * @OA\Post(
+     *     path="/api/dedicated-gpus",
+     *     summary="Create a new dedicated GPU",
+     *     tags={"Dedicated GPUs"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name"},
+     *             @OA\Property(property="name", type="string", maxLength=255, example="RTX 4090")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="GPU created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Dedicated GPU created successfully."),
+     *             @OA\Property(property="data", ref="#/components/schemas/DedicatedGpu")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Validation failed."),
+     *             @OA\Property(
+     *                 property="errors",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="name",
+     *                     type="array",
+     *                     @OA\Items(type="string", example="The name field is required.")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Failed to create GPU."),
+     *             @OA\Property(property="error", type="string")
+     *         )
+     *     )
+     * )
      */
     public function store(Request $request)
     {
@@ -63,11 +153,54 @@ class DedicatedGpuController extends Controller
         }
     }
 
-    /**
-     * Display the specified dedicated GPU.
+
+   /**
+     * Store a newly created dedicated GPU
      *
-     * @urlParam id int required The ID of the GPU. Example: 3
-     * @return \Illuminate\Http\JsonResponse
+     * @OA\Post(
+     *     path="/api/dedicated-gpus",
+     *     summary="Create a new dedicated GPU",
+     *     tags={"Dedicated GPUs"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name"},
+     *             @OA\Property(property="name", type="string", maxLength=255, example="RTX 4090")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="GPU created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Dedicated GPU created successfully."),
+     *             @OA\Property(property="data", ref="#/components/schemas/DedicatedGpu")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Validation failed."),
+     *             @OA\Property(
+     *                 property="errors",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="name",
+     *                     type="array",
+     *                     @OA\Items(type="string", example="The name field is required.")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Failed to create GPU."),
+     *             @OA\Property(property="error", type="string")
+     *         )
+     *     )
+     * )
      */
     public function show($id)
     {
@@ -87,11 +220,67 @@ class DedicatedGpuController extends Controller
     }
 
     /**
-     * Update the specified dedicated GPU in storage.
+     * Update the specified dedicated GPU
      *
-     * @urlParam id int required The ID of the GPU. Example: 5
-     * @bodyParam name string required The new name of the GPU. Example: GTX 1660 Ti
-     * @return \Illuminate\Http\JsonResponse
+     * @OA\Put(
+     *     path="/api/dedicated-gpus/{id}",
+     *     summary="Update a GPU",
+     *     tags={"Dedicated GPUs"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID of the GPU to update",
+     *         required=true,
+     *         @OA\Schema(type="integer"),
+     *         example=5
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name"},
+     *             @OA\Property(property="name", type="string", maxLength=255, example="GTX 1660 Ti")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="GPU updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Dedicated GPU updated successfully."),
+     *             @OA\Property(property="data", ref="#/components/schemas/DedicatedGpu")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="GPU not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Dedicated GPU not found.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Validation failed."),
+     *             @OA\Property(
+     *                 property="errors",
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="name",
+     *                     type="array",
+     *                     @OA\Items(type="string", example="The name field is required.")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Failed to update GPU."),
+     *             @OA\Property(property="error", type="string")
+     *         )
+     *     )
+     * )
      */
     public function update(Request $request, $id)
     {
@@ -125,11 +314,45 @@ class DedicatedGpuController extends Controller
         }
     }
 
+
     /**
-     * Remove the specified dedicated GPU from storage.
+     * Remove the specified dedicated GPU
      *
-     * @urlParam id int required The ID of the GPU. Example: 2
-     * @return \Illuminate\Http\JsonResponse
+     * @OA\Delete(
+     *     path="/api/dedicated-gpus/{id}",
+     *     summary="Delete a GPU",
+     *     tags={"Dedicated GPUs"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID of the GPU to delete",
+     *         required=true,
+     *         @OA\Schema(type="integer"),
+     *         example=2
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="GPU deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Dedicated GPU deleted successfully.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="GPU not found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Dedicated GPU not found.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal server error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Failed to delete GPU."),
+     *             @OA\Property(property="error", type="string")
+     *         )
+     *     )
+     * )
      */
     public function destroy($id)
     {
@@ -152,3 +375,14 @@ class DedicatedGpuController extends Controller
         }
     }
 }
+
+/**
+ * @OA\Schema(
+ *     schema="DedicatedGpu",
+ *     type="object",
+ *     @OA\Property(property="id", type="integer", example=1),
+ *     @OA\Property(property="name", type="string", example="RTX 4090"),
+ *     @OA\Property(property="created_at", type="string", format="date-time"),
+ *     @OA\Property(property="updated_at", type="string", format="date-time")
+ * )
+ */
